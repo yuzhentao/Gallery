@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_transparent"
+    android:foreground="?attr/selectableItemBackground"
+    tools:background="@color/album_black"
+    tools:ignore="UnusedAttribute">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_selected"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/selector_file"
+        app:layout_constraintEnd_toEndOf="@id/iv"
+        app:layout_constraintTop_toTopOf="@id/iv" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_selected"
+        style="@style/Album_TextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/album_white"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_selected"
+        app:layout_constraintEnd_toEndOf="@id/iv_selected"
+        app:layout_constraintStart_toStartOf="@id/iv_selected"
+        app:layout_constraintTop_toTopOf="@id/iv_selected"
+        tools:text="9" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_s"
+        style="@style/Album_ImageStyle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/tv_s"
+        app:layout_constraintEnd_toEndOf="@id/iv"
+        app:layout_constraintStart_toStartOf="@id/iv"
+        app:layout_constraintTop_toTopOf="@id/iv"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:src="@drawable/ic_system_camera_green"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_s"
+        style="@style/Album_TextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/album_444"
+        android:textSize="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/iv"
+        app:layout_constraintEnd_toEndOf="@id/iv"
+        app:layout_constraintStart_toStartOf="@id/iv"
+        app:layout_constraintTop_toBottomOf="@id/iv_s"
+        tools:text="@string/test"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

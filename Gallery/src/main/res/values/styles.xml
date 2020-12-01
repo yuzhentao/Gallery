@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AlbumTheme" parent="Theme.AppCompat.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/album_white</item>
+        <item name="colorPrimaryDark">@color/album_white</item>
+        <item name="colorAccent">@color/album_green</item>
+    </style>
+
+    <style name="Album_TextStyle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textDirection">locale</item>
+    </style>
+
+    <style name="Album_TextStyle_NoGravity">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textDirection">locale</item>
+    </style>
+
+    <style name="Album_TextStyle_NoGravity_NoEllipsize">
+        <item name="android:maxLines">1</item>
+        <item name="android:textDirection">locale</item>
+    </style>
+
+    <style name="Album_TextStyle_NoGravity_NoMaxLines">
+        <item name="android:ellipsize">end</item>
+        <item name="android:textDirection">locale</item>
+    </style>
+
+    <style name="Album_ImageStyle">
+        <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="Album_RvStyle">
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+</resources>

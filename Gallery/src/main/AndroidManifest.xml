@@ -1,0 +1,31 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.yzt.gallery">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application>
+
+        <activity
+            android:name="com.yzt.gallery.activity.AlbumActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AlbumTheme" />
+        <activity
+            android:name="com.yzt.gallery.activity.AlbumPreviewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AlbumTheme" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.yzt.gallery.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

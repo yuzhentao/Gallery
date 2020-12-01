@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/top"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/album_white"
+    android:minHeight="54dp">
+
+    <View
+        android:id="@+id/v_top_left"
+        android:layout_width="50dp"
+        android:layout_height="54dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_top_left"
+        app:layout_constraintEnd_toEndOf="@id/iv_top_left"
+        app:layout_constraintStart_toStartOf="@id/iv_top_left"
+        app:layout_constraintTop_toTopOf="@id/iv_top_left" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_top_left"
+        style="@style/Album_ImageStyle"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_album_back_green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_top_center"
+        style="@style/Album_TextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="304dp"
+        android:textColor="@color/album_444"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="测试测试测试" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_top_right"
+        style="@style/Album_TextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/album_green"
+        android:textSize="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="测试测试测试"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/v_top_right"
+        android:layout_width="50dp"
+        android:layout_height="54dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/iv_top_right"
+        app:layout_constraintEnd_toEndOf="@id/iv_top_right"
+        app:layout_constraintStart_toStartOf="@id/iv_top_right"
+        app:layout_constraintTop_toTopOf="@id/iv_top_right"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_top_right"
+        style="@style/Album_ImageStyle"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_album_back_green"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/v_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/album_color_top"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

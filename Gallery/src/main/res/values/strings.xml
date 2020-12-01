@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="permission_sd">没有存储权限，此应用可能无法正常运行。打开应用程序设置以打开存储权限。</string>
+    <string name="open_with">打开方式</string>
+    <string name="no_activity_found">No Activity found to handle Intent.</string>
+
+    <string name="system_camera">相机</string>
+    <string name="system_album">相册</string>
+    <string name="back">返回</string>
+    <string name="preview">预览</string>
+    <string name="confirm">确定</string>
+    <string name="confirm_selected_count">确定(%1$d)</string>
+    <string name="max_selected_count">最多只能选择 %1$d 张图片</string>
+    <string name="all">所有</string>
+    <string name="count">%1$d 张图片</string>
+    <string name="load_error">网络错误</string>
+
+    <string name="album_load_complete">点击加载更多</string>
+    <string name="album_load_end">没有更多数据</string>
+    <string name="album_load_fail">加载失败，请点我重试</string>
+
+    <string name="test">测试测试测试</string>
+    <string name="test_short">测试</string>
+    <string name="test_long">测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试</string>
+    <string name="test_test" tools:ignore="Typos">测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试</string>
+    <string name="test_test_test" tools:ignore="Typos">测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\n测试测试测试\nEND</string>
+    <string name="test_num">999999</string>
+
+</resources>

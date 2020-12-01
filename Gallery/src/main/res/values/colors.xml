@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="album_black">#FF000000</color>
+    <color name="album_white">#FFFFFFFF</color>
+    <color name="album_green">#FF4D9F7C</color>
+    <color name="album_blue">#FF636FEA</color>
+    <color name="album_blue_2">#FF8B9AF5</color>
+    <color name="album_red">#FFF20000</color>
+    <color name="album_orange">#FFFFA422</color>
+    <color name="album_d7">#FFD7D7D7</color>
+    <color name="album_f2">#FFF2F2F2</color>
+    <color name="album_f8">#FFF8F8F8</color>
+    <color name="album_ca">#FFCACACA</color>
+    <color name="album_333">#FF333333</color>
+    <color name="album_444">#FF444444</color>
+    <color name="album_444_30">#4D444444</color>
+    <color name="album_666">#FF666666</color>
+    <color name="album_999">#FF999999</color>
+    <color name="album_black_70">#B3000000</color>
+    <color name="album_black_65">#A6000000</color>
+    <color name="album_black_60">#99000000</color>
+    <color name="album_black_50">#80000000</color>
+    <color name="album_black_40">#66000000</color>
+    <color name="album_black_05">#0D000000</color>
+    <color name="album_green_50">#804D9F7C</color>
+    <color name="album_color_top">#0F444444</color>
+
+</resources>
