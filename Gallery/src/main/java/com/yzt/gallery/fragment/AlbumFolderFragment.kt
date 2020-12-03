@@ -99,15 +99,23 @@ class AlbumFolderFragment : androidx.fragment.app.Fragment() {
             }
         }
         viewModel = ViewModelProvider(activity!!).get(AlbumViewModel::class.java)
+//        compositeDisposable.add(
+//                viewModel!!
+//                        .getFolders()
+//                        .compose(AlbumRxSchedulers.normalSchedulers())
+//                        .subscribe { folders ->
+//                            folders[0].isSelected = true
+//                            adapter!!.setList(folders)
+//                            viewModel!!.setCurrentFolder(folders[0])
+//                        }
+//        )
         compositeDisposable.add(
-                viewModel!!
-                        .getFolders()
-                        .compose(AlbumRxSchedulers.normalSchedulers())
-                        .subscribe { folders ->
-                            folders[0].isSelected = true
-                            adapter!!.setList(folders)
-                            viewModel!!.setCurrentFolder(folders[0])
-                        }
+            viewModel!!
+                .getFoldersNew()
+                .compose(AlbumRxSchedulers.normalSchedulers())
+                .subscribe { folders ->
+                    AlbumLogUtil.e(folders.toString())
+                }
         )
         return view
     }

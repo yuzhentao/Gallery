@@ -10,6 +10,8 @@ import com.yzt.gallery.R
 import com.yzt.gallery.bean.AlbumFile
 import com.yzt.gallery.bean.AlbumFolder
 import com.yzt.gallery.repository.AlbumRepository
+import com.yzt.gallery.repository.AlbumRepositoryNew
+import com.yzt.gallery.repository.LocalMediaFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import io.reactivex.Observable
 
@@ -87,6 +89,10 @@ class AlbumViewModel(hasSystemCamera: Boolean, hasSystemAlbum: Boolean, files: M
 
     fun getFolders(): Observable<MutableList<AlbumFolder>> {
         return AlbumRepository.get().getFolders()
+    }
+
+    fun getFoldersNew(): Observable<MutableList<LocalMediaFolder>> {
+        return AlbumRepositoryNew.get().getFolders()
     }
 
     fun setCurrentFolder(currentFolder: AlbumFolder?) {
