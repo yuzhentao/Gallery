@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import com.gyf.immersionbar.ImmersionBar
 import com.yzt.gallery.R
 import com.yzt.gallery.activity.AlbumActivity
 import com.yzt.gallery.adapter.AlbumFolderAdapter
+import com.yzt.gallery.adapter.AlbumFolderAdapterNew
 import com.yzt.gallery.bean.AlbumFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import com.yzt.gallery.util.*
@@ -27,7 +29,7 @@ import io.reactivex.disposables.CompositeDisposable
  *
  * @author yzt 2020/4/22
  */
-class AlbumFolderFragment : androidx.fragment.app.Fragment() {
+class AlbumFolderFragment : Fragment() {
 
     private var top: ConstraintLayout? = null
     private var vLeft: View? = null
@@ -38,7 +40,8 @@ class AlbumFolderFragment : androidx.fragment.app.Fragment() {
     private val layoutManager by lazy {
         AlbumLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
-    private var adapter: AlbumFolderAdapter? = null
+//    private var adapter: AlbumFolderAdapter? = null
+    private var adapter: AlbumFolderAdapterNew? = null
 
     private var onClickListener: View.OnClickListener? = null
 
@@ -48,7 +51,7 @@ class AlbumFolderFragment : androidx.fragment.app.Fragment() {
 
     private var lastPosition = -1
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.fragment_album_folder, container, false)
         top = view.findViewById(R.id.top)
         vLeft = view.findViewById(R.id.v_top_left)
@@ -65,7 +68,8 @@ class AlbumFolderFragment : androidx.fragment.app.Fragment() {
         val itemDecoration = AlbumLinearItemDecoration(AlbumDimenUtil.dp2px(context,2), false)
         rv!!.addItemDecoration(itemDecoration)
         (rv!!.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        adapter = AlbumFolderAdapter(null, activity)
+//        adapter = AlbumFolderAdapter(null, activity)
+        adapter = AlbumFolderAdapterNew(null, activity)
         rv!!.adapter = adapter
         adapter!!.setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
         adapter!!.setOnItemClickListener { adapter, _, position ->
@@ -114,7 +118,8 @@ class AlbumFolderFragment : androidx.fragment.app.Fragment() {
                 .getFoldersNew()
                 .compose(AlbumRxSchedulers.normalSchedulers())
                 .subscribe { folders ->
-                    AlbumLogUtil.e(folders.toString())
+                    adapter!!.setList(folders)
+                    viewModel!!.setCurrentFolder(folders[0])
                 }
         )
         return view

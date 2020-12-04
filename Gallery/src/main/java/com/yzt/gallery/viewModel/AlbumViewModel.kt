@@ -31,6 +31,7 @@ class AlbumViewModel(hasSystemCamera: Boolean, hasSystemAlbum: Boolean, files: M
 
     var folderNameLiveData: LiveData<String>? = null
     var currentFolderLiveData: MutableLiveData<AlbumFolder> = MutableLiveData<AlbumFolder>()
+    var currentFolderLiveDataNew: MutableLiveData<LocalMediaFolder> = MutableLiveData<LocalMediaFolder>()
     var filesLiveData: MutableLiveData<MutableList<AlbumFile>> = MutableLiveData<MutableList<AlbumFile>>()
 
     init {
@@ -98,6 +99,11 @@ class AlbumViewModel(hasSystemCamera: Boolean, hasSystemAlbum: Boolean, files: M
     fun setCurrentFolder(currentFolder: AlbumFolder?) {
         pageNo = 0
         this.currentFolderLiveData.value = currentFolder
+    }
+
+    fun setCurrentFolder(currentFolder: LocalMediaFolder?) {
+        pageNo = 0
+        this.currentFolderLiveDataNew.value = currentFolder
     }
 
 }

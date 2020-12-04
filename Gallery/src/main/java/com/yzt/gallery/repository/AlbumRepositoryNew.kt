@@ -49,24 +49,6 @@ class AlbumRepositoryNew {
     private val SELECTION_29 = (MediaStore.Files.FileColumns.MEDIA_TYPE + "=? "
             + " AND " + MediaStore.MediaColumns.SIZE + ">0")
 
-    private val SELECTION_NOT_GIF = ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-            + " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF + ") AND " + MediaStore.MediaColumns.SIZE + ">0)" + GROUP_BY_BUCKET_Id)
-
-    private val SELECTION_NOT_GIF_29 = (MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-            + " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF + " AND " + MediaStore.MediaColumns.SIZE + ">0")
-
-    /**
-     * Queries for images with the specified suffix
-     */
-    private val SELECTION_SPECIFIED_FORMAT = ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-            + " AND " + MediaStore.MediaColumns.MIME_TYPE)
-
-    /**
-     * Queries for images with the specified suffix targetSdk>=29
-     */
-    private val SELECTION_SPECIFIED_FORMAT_29 = (MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-            + " AND " + MediaStore.MediaColumns.MIME_TYPE)
-
     private val uri: Uri = MediaStore.Files.getContentUri("external")//统一资源标志符
     private val projection_29 = arrayOf(
         MediaStore.Files.FileColumns._ID,
@@ -100,7 +82,7 @@ class AlbumRepositoryNew {
                     val count = data.count
                     var totalCount = 0
                     if (count > 0) {
-                        if (SdkVersionUtils.checkedAndroid_Q()) { //API>=29
+                        if (SdkVersionUtils.checkedAndroid_Q()) {//API>=29
                             val countMap: MutableMap<Long, Long> = HashMap()
                             while (data.moveToNext()) {
                                 val bucketId =
@@ -202,7 +184,7 @@ class AlbumRepositoryNew {
      * 获取查询条件
      */
     private fun getSelection(): String {
-        return if (SdkVersionUtils.checkedAndroid_Q()) SELECTION_NOT_GIF_29 else SELECTION_NOT_GIF
+        return if (SdkVersionUtils.checkedAndroid_Q()) SELECTION_29 else SELECTION
     }
 
     /**
