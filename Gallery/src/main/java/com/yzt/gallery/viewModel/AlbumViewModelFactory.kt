@@ -3,17 +3,18 @@ package com.yzt.gallery.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.yzt.gallery.bean.AlbumFile
+import com.yzt.gallery.repository.LocalMedia
 
 /**
  * 相册ViewModelFactory
  *
  * @author yzt 2020/4/22
  */
-class AlbumViewModelFactory(hasSystemCamera: Boolean, hasSystemAlbum: Boolean, files: MutableList<AlbumFile>?) : ViewModelProvider.NewInstanceFactory() {
+class AlbumViewModelFactory(hasSystemCamera: Boolean, hasSystemAlbum: Boolean, files: MutableList<LocalMedia>?) : ViewModelProvider.NewInstanceFactory() {
 
     private var hasSystemCamera: Boolean = false
     private var hasSystemAlbum: Boolean = false
-    private var files: MutableList<AlbumFile>? = null
+    private var files: MutableList<LocalMedia>? = null
 
     init {
         this.hasSystemCamera = hasSystemCamera

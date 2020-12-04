@@ -9,8 +9,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.yzt.gallery.R
-import com.yzt.gallery.bean.AlbumFolder
-import com.yzt.gallery.repository.LocalMedia
 import com.yzt.gallery.repository.LocalMediaFolder
 
 /**
@@ -18,7 +16,8 @@ import com.yzt.gallery.repository.LocalMediaFolder
  *
  * @author yzt 2020/4/22
  */
-class AlbumFolderAdapterNew(data: MutableList<LocalMediaFolder>?, activity: Activity?) : BaseQuickAdapter<LocalMediaFolder, BaseViewHolder>(R.layout.item_album_folder, data) {
+class AlbumFolderAdapterNew(data: MutableList<LocalMediaFolder>?, activity: Activity?) :
+    BaseQuickAdapter<LocalMediaFolder, BaseViewHolder>(R.layout.item_album_folder, data) {
 
     private var activity: Activity? = null
 

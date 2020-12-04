@@ -31,16 +31,13 @@ import com.tbruyelle.rxpermissions2.Permission
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
-import com.yzt.gallery.adapter.AlbumFileAdapter
 import com.yzt.gallery.adapter.AlbumFileAdapterNew
-import com.yzt.gallery.bean.AlbumFile
 import com.yzt.gallery.fragment.AlbumFolderFragment
 import com.yzt.gallery.key.AlbumConstants
 import com.yzt.gallery.key.AlbumFileType
 import com.yzt.gallery.key.AlbumKeys
 import com.yzt.gallery.listener.AlbumDoubleClickListener
 import com.yzt.gallery.repository.LocalMedia
-import com.yzt.gallery.repository.LocalMediaFolder
 import com.yzt.gallery.util.*
 import com.yzt.gallery.view.AlbumLoadMoreView
 import com.yzt.gallery.viewModel.AlbumViewModel
@@ -64,7 +61,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun <T : View> Activity.bindView(@IdRes viewId: Int): Lazy<T> {
-        return lazy { findViewById<T>(viewId) }
+        return lazy { findViewById(viewId) }
     }
 
     private val dl: androidx.drawerlayout.widget.DrawerLayout by bindView(R.id.dl)
@@ -80,7 +77,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
     private val layoutManager by lazy {
         AlbumGridLayoutManager(this@AlbumActivity, 3)
     }
-//    private var adapter: AlbumFileAdapter? = null
+
     private var adapter: AlbumFileAdapterNew? = null
 
     private var rxPermissions: RxPermissions? = null
@@ -89,7 +86,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
     private var viewModelFactory: AlbumViewModelFactory? = null
     private var viewModel: AlbumViewModel? = null
 
-    private var selectedFiles: MutableList<AlbumFile>? = mutableListOf()
+    private var selectedFiles: MutableList<LocalMedia>? = mutableListOf()
 
     private val imageFolder = Environment.getExternalStorageDirectory().absolutePath + "/Gallery/"
     private var filePath: String? = null
@@ -107,14 +104,15 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
                 AlbumConstants.REQUEST_CODE_PREVIEW -> {
                     val intent = data ?: return
                     val bundle = intent.getBundleExtra(AlbumKeys.INTENT_BUNDLE) ?: return
-                    val backFiles: MutableList<AlbumFile> = bundle.getParcelableArrayList(AlbumKeys.BUNDLE_BEANS)
+                    val backFiles: MutableList<LocalMedia> =
+                        bundle.getParcelableArrayList(AlbumKeys.BUNDLE_BEANS)
                             ?: return
                     for (i in selectedFiles!!.indices) {
                         val selectFile = selectedFiles!![i]
                         for (j in backFiles.indices) {
                             val backFile = backFiles[i]
                             if (selectFile.isSelected && !backFile.isSelected) {
-                                clickItem(selectFile, selectFile.position)
+                                clickItemNew(selectFile, selectFile.position)
                                 break
                             }
                         }
@@ -139,7 +137,12 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
                     val file = File(filePath)
                     val fos = FileOutputStream(file)
                     bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-                    context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://$filePath")))
+                    context.sendBroadcast(
+                        Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                            Uri.parse("file://$filePath")
+                        )
+                    )
                     backPath()
                     fos.flush()
                     fos.close()
@@ -175,7 +178,10 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.album_backward_enter_horizontal, R.anim.album_backward_exit_horizontal)
+        overridePendingTransition(
+            R.anim.album_backward_enter_horizontal,
+            R.anim.album_backward_exit_horizontal
+        )
     }
 
     override fun onDestroy() {
@@ -212,7 +218,12 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
                     return
 
                 getSelectedFiles()
-                AlbumPreviewActivity.startActivityForResult(activity, selectedFiles!!, true, AlbumConstants.REQUEST_CODE_PREVIEW)
+                AlbumPreviewActivity.startActivityForResult(
+                    activity,
+                    selectedFiles!!,
+                    true,
+                    AlbumConstants.REQUEST_CODE_PREVIEW
+                )
             }
             R.id.tv_confirm -> {
                 getSelectedFiles()
@@ -230,31 +241,31 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-
     private fun checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             rxPermissions = RxPermissions(activity)
             permissionsDisposable = rxPermissions!!.requestEachCombined(
-                    AlbumConstants.PERMISSION_CAMERA,
-                    AlbumConstants.PERMISSION_STORAGE)
-                    .subscribe { permission: Permission ->
-                        when {
-                            permission.granted -> {
-                                initView()
-                                initData()
-                            }
-                            permission.shouldShowRequestPermissionRationale -> {
-                                checkPermission()
-                            }
-                            else -> {
-                                AlbumToastUtil.longCenter(R.string.permission_sd)
-                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                val uri = Uri.fromParts("package", packageName, null)
-                                intent.data = uri
-                                startActivityForResult(intent, AlbumConstants.REQUEST_CODE_SETTINGS)
-                            }
+                AlbumConstants.PERMISSION_CAMERA,
+                AlbumConstants.PERMISSION_STORAGE
+            )
+                .subscribe { permission: Permission ->
+                    when {
+                        permission.granted -> {
+                            initView()
+                            initData()
+                        }
+                        permission.shouldShowRequestPermissionRationale -> {
+                            checkPermission()
+                        }
+                        else -> {
+                            AlbumToastUtil.longCenter(R.string.permission_sd)
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            val uri = Uri.fromParts("package", packageName, null)
+                            intent.data = uri
+                            startActivityForResult(intent, AlbumConstants.REQUEST_CODE_SETTINGS)
                         }
                     }
+                }
         } else {
             initView()
             initData()
@@ -280,45 +291,40 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         tvPreview.setOnClickListener(this)
         tvConfirm.setOnClickListener(this)
         AlbumRecyclerViewUtil.config(layoutManager, rv)
-        val itemDecoration = AlbumGridItemDecoration(3, AlbumDimenUtil.dp2px(context,2), false)
+        val itemDecoration = AlbumGridItemDecoration(3, AlbumDimenUtil.dp2px(context, 2), false)
         rv.addItemDecoration(itemDecoration)
         (rv.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-//        adapter = AlbumFileAdapter(null, activity)
         adapter = AlbumFileAdapterNew(null, activity)
         rv.adapter = adapter
         adapter!!.setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
         adapter!!.loadMoreModule.isEnableLoadMore = true
-        adapter!!.loadMoreModule.loadMoreView = AlbumLoadMoreView(AlbumLoadMoreView.LOAD_MORE_VERTICAL)
+        adapter!!.loadMoreModule.loadMoreView =
+            AlbumLoadMoreView(AlbumLoadMoreView.LOAD_MORE_VERTICAL)
         adapter!!.loadMoreModule.setOnLoadMoreListener {
-//            viewModel?.getFiles()
             viewModel?.getFilesNew()
         }
         adapter!!.setOnItemClickListener { adapter, _, position ->
-//            val file = adapter.data[position] as AlbumFile?
-//            file?.let {
-//                when (it.itemType) {
-//                    AlbumFileType.SYSTEM_CAMERA.ordinal -> {
-//                        openSystemCamera()
-//                    }
-//                    AlbumFileType.SYSTEM_ALBUM.ordinal -> {
-//                        openSystemGallery()
-//                    }
-//                    AlbumFileType.FILE.ordinal -> {
-//                        clickItem(it, position)
-//                    }
-//                }
-//            }
             val file = adapter.data[position] as LocalMedia?
             file?.let {
-                clickItemNew(it, position)
+                when (it.itemType) {
+                    AlbumFileType.SYSTEM_CAMERA.ordinal -> {
+                        openSystemCamera()
+                    }
+                    AlbumFileType.SYSTEM_ALBUM.ordinal -> {
+                        openSystemGallery()
+                    }
+                    AlbumFileType.FILE.ordinal -> {
+                        clickItemNew(it, position)
+                    }
+                }
             }
         }
         val folderFragment = AlbumFolderFragment()
-        folderFragment.setOnBackClickListener(View.OnClickListener { dl.closeDrawer(GravityCompat.END) })
+        folderFragment.setOnBackClickListener { dl.closeDrawer(GravityCompat.END) }
         supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.cl_folder, folderFragment)
-                .commitAllowingStateLoss()
+            .beginTransaction()
+            .replace(R.id.cl_folder, folderFragment)
+            .commitAllowingStateLoss()
     }
 
     private fun initData() {
@@ -330,19 +336,6 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         viewModelFactory = AlbumViewModelFactory(hasSystemCamera, hasSystemAlbum, null)
         viewModel = ViewModelProvider(activity, viewModelFactory!!).get(AlbumViewModel::class.java)
         viewModel?.let {
-//            it.folderNameLiveData!!.observe(this, Observer { _ ->
-//                adapter!!.setList(null)
-//                it.getFiles()
-//                selectedCount = 0
-//            })
-//            it.filesLiveData.observe(this, Observer { files ->
-//                if (files != null && files.size > 0) {
-//                    adapter!!.addData(files)
-//                    adapter!!.loadMoreModule.loadMoreComplete()
-//                } else {
-//                    adapter!!.loadMoreModule.loadMoreEnd()
-//                }
-//            })
             it.folderNameLiveDataNew!!.observe(this, Observer { _ ->
                 adapter!!.setList(null)
                 it.getFilesNew()
@@ -364,7 +357,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun clickItem(file: AlbumFile?, position: Int) {
+    private fun clickItemNew(file: LocalMedia?, position: Int) {
         file?.let {
             if (selectedCount >= maxSelectedCount && !it.isSelected) {
                 AlbumToastUtil.shortCenter(getString(R.string.max_selected_count, maxSelectedCount))
@@ -378,8 +371,8 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
                 if (selectedCount < 0) {
                     selectedCount = 0
                 }
-                for (index in (adapter!!.data as MutableList<AlbumFile>).indices) {
-                    val tempFile = (adapter!!.data as MutableList<AlbumFile>)[index]
+                for (index in adapter!!.data.indices) {
+                    val tempFile = adapter!!.data[index]
                     if (tempFile.isCamera || tempFile.isAlbum)
                         continue
 
@@ -397,45 +390,10 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
             adapter!!.notifyItemChanged(position)
             tvPreview.isEnabled = selectedCount > 0
             tvConfirm.isEnabled = selectedCount > 0
-            tvConfirm.text = if (selectedCount > 0) getString(R.string.confirm_selected_count, selectedCount) else getString(R.string.confirm)
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun clickItemNew(file: LocalMedia?, position: Int) {
-        file?.let {
-//            if (selectedCount >= maxSelectedCount && !it.isSelected) {
-//                AlbumToastUtil.shortCenter(getString(R.string.max_selected_count, maxSelectedCount))
-//                return
-//            }
-//            it.isSelected = !it.isSelected
-//            if (it.isSelected) {
-//                selectedCount++
-//            } else {
-//                selectedCount--
-//                if (selectedCount < 0) {
-//                    selectedCount = 0
-//                }
-//                for (index in (adapter!!.data as MutableList<AlbumFile>).indices) {
-//                    val tempFile = (adapter!!.data as MutableList<AlbumFile>)[index]
-//                    if (tempFile.isCamera || tempFile.isAlbum)
-//                        continue
-//
-//                    if (tempFile.isSelected && tempFile.selectedNo > it.selectedNo) {
-//                        tempFile.selectedNo = tempFile.selectedNo - 1
-//                        adapter!!.notifyItemChanged(index)
-//                    }
-//                    if (!tempFile.isSelected && tempFile.selectedNo == 1) {
-//                        tempFile.selectedNo = 0
-//                        adapter!!.notifyItemChanged(index)
-//                    }
-//                }
-//            }
-//            it.selectedNo = selectedCount
-//            adapter!!.notifyItemChanged(position)
-//            tvPreview.isEnabled = selectedCount > 0
-//            tvConfirm.isEnabled = selectedCount > 0
-//            tvConfirm.text = if (selectedCount > 0) getString(R.string.confirm_selected_count, selectedCount) else getString(R.string.confirm)
+            tvConfirm.text = if (selectedCount > 0) getString(
+                R.string.confirm_selected_count,
+                selectedCount
+            ) else getString(R.string.confirm)
         }
     }
 
@@ -463,7 +421,12 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         intent.data = Uri.parse("content://media/internal/images/media")
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
         if (intent.resolveActivity(activity.packageManager) != null) {
-            activity.startActivityForResult(Intent.createChooser(intent, getString(R.string.open_with)), AlbumConstants.REQUEST_CODE_SYSTEM_ALBUM)
+            activity.startActivityForResult(
+                Intent.createChooser(
+                    intent,
+                    getString(R.string.open_with)
+                ), AlbumConstants.REQUEST_CODE_SYSTEM_ALBUM
+            )
         } else {
             AlbumToastUtil.longCenter(R.string.no_activity_found)
         }
@@ -471,8 +434,8 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun getSelectedFiles() {
         selectedFiles!!.clear()
-        for (index in (adapter!!.data as MutableList<AlbumFile>).indices) {
-            val file = (adapter!!.data as MutableList<AlbumFile>)[index]
+        for (index in adapter!!.data.indices) {
+            val file = adapter!!.data[index]
             if (file.isSelected) {
                 selectedFiles!!.add(file)
             }

@@ -16,9 +16,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.gyf.immersionbar.ImmersionBar
 import com.yzt.gallery.R
 import com.yzt.gallery.activity.AlbumActivity
-import com.yzt.gallery.adapter.AlbumFolderAdapter
 import com.yzt.gallery.adapter.AlbumFolderAdapterNew
-import com.yzt.gallery.bean.AlbumFolder
 import com.yzt.gallery.repository.LocalMediaFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import com.yzt.gallery.util.*
@@ -41,7 +39,6 @@ class AlbumFolderFragment : Fragment() {
     private val layoutManager by lazy {
         AlbumLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
-//    private var adapter: AlbumFolderAdapter? = null
     private var adapter: AlbumFolderAdapterNew? = null
 
     private var onClickListener: View.OnClickListener? = null
@@ -69,40 +66,9 @@ class AlbumFolderFragment : Fragment() {
         val itemDecoration = AlbumLinearItemDecoration(AlbumDimenUtil.dp2px(context,2), false)
         rv!!.addItemDecoration(itemDecoration)
         (rv!!.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-//        adapter = AlbumFolderAdapter(null, activity)
         adapter = AlbumFolderAdapterNew(null, activity)
         rv!!.adapter = adapter
         adapter!!.setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
-//        adapter!!.setOnItemClickListener { adapter, _, position ->
-//            if (AlbumClickUtil.isFastDoubleClick())
-//                return@setOnItemClickListener
-//
-//            if (position == lastPosition) {
-//                if (activity != null) {
-//                    (activity as AlbumActivity?)!!.closeDrawer()
-//                }
-//                return@setOnItemClickListener
-//            }
-//
-//            val bean = adapter.data[position] as AlbumFolder?
-//            bean?.let {
-//                it.isSelected = true
-//                adapter.notifyItemChanged(position)
-//                if (lastPosition == -1) {
-//                    lastPosition = 0
-//                }
-//                val lastBean = adapter.data[lastPosition] as AlbumFolder?
-//                lastBean?.let { itt ->
-//                    itt.isSelected = false
-//                    adapter.notifyItemChanged(lastPosition)
-//                }
-//                viewModel!!.setCurrentFolder(it)
-//                if (activity != null) {
-//                    (activity as AlbumActivity?)!!.closeDrawer()
-//                }
-//                lastPosition = position
-//            }
-//        }
         adapter!!.setOnItemClickListener { adapter, _, position ->
             if (AlbumClickUtil.isFastDoubleClick())
                 return@setOnItemClickListener
@@ -134,16 +100,6 @@ class AlbumFolderFragment : Fragment() {
             }
         }
         viewModel = ViewModelProvider(activity!!).get(AlbumViewModel::class.java)
-//        compositeDisposable.add(
-//                viewModel!!
-//                        .getFolders()
-//                        .compose(AlbumRxSchedulers.normalSchedulers())
-//                        .subscribe { folders ->
-//                            folders[0].isSelected = true
-//                            adapter!!.setList(folders)
-//                            viewModel!!.setCurrentFolder(folders[0])
-//                        }
-//        )
         compositeDisposable.add(
             viewModel!!
                 .getFoldersNew()

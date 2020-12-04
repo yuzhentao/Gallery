@@ -12,6 +12,12 @@ import android.text.TextUtils;
  */
 public class LocalMedia implements Parcelable {
 
+    private int itemType;
+    private boolean isSelected;
+    private int selectedNo;//选中的号码
+    private boolean isCamera;
+    private boolean isAlbum;
+
     /**
      * file to ID
      */
@@ -195,6 +201,46 @@ public class LocalMedia implements Parcelable {
         this.position = position;
         this.num = num;
         this.chooseModel = chooseModel;
+    }
+
+    public int getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(int itemType) {
+        this.itemType = itemType;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public int getSelectedNo() {
+        return selectedNo;
+    }
+
+    public void setSelectedNo(int selectedNo) {
+        this.selectedNo = selectedNo;
+    }
+
+    public boolean isCamera() {
+        return isCamera;
+    }
+
+    public void setCamera(boolean camera) {
+        isCamera = camera;
+    }
+
+    public boolean isAlbum() {
+        return isAlbum;
+    }
+
+    public void setAlbum(boolean album) {
+        isAlbum = album;
     }
 
     public String getPath() {
@@ -396,6 +442,12 @@ public class LocalMedia implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.itemType);
+        dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.selectedNo);
+        dest.writeByte(this.isCamera ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isAlbum ? (byte) 1 : (byte) 0);
+
         dest.writeLong(this.id);
         dest.writeString(this.path);
         dest.writeString(this.realPath);
@@ -425,6 +477,12 @@ public class LocalMedia implements Parcelable {
     }
 
     protected LocalMedia(Parcel in) {
+        this.itemType = in.readInt();
+        this.isSelected = in.readByte() != 0;
+        this.selectedNo =  in.readInt();
+        this.isCamera = in.readByte() != 0;
+        this.isAlbum = in.readByte() != 0;
+
         this.id = in.readLong();
         this.path = in.readString();
         this.realPath = in.readString();

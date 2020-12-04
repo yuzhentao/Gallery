@@ -188,7 +188,7 @@ class AlbumRepository private constructor() {
         }
     }
 
-    fun getSystemCamera(): Observable<MutableList<AlbumFile>>? {
+    fun getSystemCamera(): Observable<MutableList<AlbumFile>> {
         return Observable.create { emitter ->
             val file = AlbumFile()
             file.isCamera = true
@@ -199,7 +199,7 @@ class AlbumRepository private constructor() {
         }
     }
 
-    fun getSystemAlbum(): Observable<MutableList<AlbumFile>>? {
+    fun getSystemAlbum(): Observable<MutableList<AlbumFile>> {
         return Observable.create { emitter ->
             val file = AlbumFile()
             file.isCamera = true

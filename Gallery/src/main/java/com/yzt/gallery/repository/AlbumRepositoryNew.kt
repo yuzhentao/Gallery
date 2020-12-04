@@ -7,7 +7,6 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
-import com.yzt.gallery.bean.AlbumFile
 import com.yzt.gallery.key.AlbumFileType
 import com.yzt.gallery.util.AlbumLogUtil
 import io.reactivex.Observable
@@ -351,6 +350,10 @@ class AlbumRepositoryNew {
                                 size,
                                 bucket_id
                             )
+                            image.itemType = AlbumFileType.FILE.ordinal
+                            image.isSelected = false
+                            image.isCamera = false
+                            image.isAlbum = false
                             files.add(image)
                         } while (data.moveToNext())
                     }
@@ -361,6 +364,15 @@ class AlbumRepositoryNew {
             } finally {
                 if (data != null && !data.isClosed) {
                     data.close()
+                }
+            }
+            for (index in files.indices) {
+                if (hasSystemCamera && hasSystemAlbum) {
+                    files[index].position = index + 2
+                } else if (hasSystemCamera && !hasSystemAlbum || !hasSystemCamera && hasSystemAlbum) {
+                    files[index].position = index + 1
+                } else {
+                    files[index].position = index
                 }
             }
             emitter.onNext(files)
@@ -438,8 +450,8 @@ class AlbumRepositoryNew {
     fun getSystemCamera(): Observable<MutableList<LocalMedia>> {
         return Observable.create { emitter ->
             val file = LocalMedia()
-//            file.isCamera = true
-//            file.itemType = AlbumFileType.SYSTEM_CAMERA.ordinal
+            file.isCamera = true
+            file.itemType = AlbumFileType.SYSTEM_CAMERA.ordinal
             val files: MutableList<LocalMedia> = ArrayList()
             files.add(file)
             emitter.onNext(files)
@@ -449,8 +461,8 @@ class AlbumRepositoryNew {
     fun getSystemAlbum(): Observable<MutableList<LocalMedia>> {
         return Observable.create { emitter ->
             val file = LocalMedia()
-//            file.isCamera = true
-//            file.itemType = AlbumFileType.SYSTEM_ALBUM.ordinal
+            file.isAlbum = true
+            file.itemType = AlbumFileType.SYSTEM_ALBUM.ordinal
             val files: MutableList<LocalMedia> = ArrayList()
             files.add(file)
             emitter.onNext(files)

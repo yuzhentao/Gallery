@@ -12,9 +12,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityOptionsCompat
 import com.gyf.immersionbar.ImmersionBar
 import com.yzt.gallery.R
-import com.yzt.gallery.adapter.AlbumPreviewAdapter
-import com.yzt.gallery.bean.AlbumFile
+import com.yzt.gallery.adapter.AlbumPreviewAdapterNew
 import com.yzt.gallery.key.AlbumKeys
+import com.yzt.gallery.repository.LocalMedia
 import com.yzt.gallery.util.AlbumViewUtil
 import com.yzt.gallery.view.AlbumViewPager
 import java.util.*
@@ -44,9 +44,9 @@ class AlbumPreviewActivity : AppCompatActivity(), View.OnClickListener {
     private val tvBack: AppCompatTextView by bindView(R.id.tv_back)
     private val tvConfirm: AppCompatTextView by bindView(R.id.tv_confirm)
 
-    private var adapter: AlbumPreviewAdapter? = null
-    private var files: MutableList<AlbumFile>? = mutableListOf()
-    private var currentFile: AlbumFile? = null
+    private var adapter: AlbumPreviewAdapterNew? = null
+    private var files: MutableList<LocalMedia>? = mutableListOf()
+    private var currentFile: LocalMedia? = null
 
     private var selectedCount = 0
     private var unSelectedNos: MutableList<Int>? = mutableListOf()
@@ -56,7 +56,7 @@ class AlbumPreviewActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
 
         @JvmStatic
-        fun startActivityForResult(activity: Activity, files: MutableList<AlbumFile>, showConfirm: Boolean, requestCode: Int) {
+        fun startActivityForResult(activity: Activity, files: MutableList<LocalMedia>, showConfirm: Boolean, requestCode: Int) {
             val intent = Intent(activity, AlbumPreviewActivity::class.java)
             val bundle = Bundle()
             bundle.putParcelableArrayList(AlbumKeys.BUNDLE_BEANS, files as ArrayList<out Parcelable>)
@@ -136,7 +136,7 @@ class AlbumPreviewActivity : AppCompatActivity(), View.OnClickListener {
                 tvSelected.visibility = if (itt.isSelected) View.VISIBLE else View.GONE
                 tvSelected.text = itt.selectedNo.toString()
             }
-            adapter = AlbumPreviewAdapter(context, activity, it)
+            adapter = AlbumPreviewAdapterNew(context, activity, it)
             vp.adapter = adapter
             vp.offscreenPageLimit = it.size
             vp.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
