@@ -101,7 +101,7 @@ class AlbumViewModel(hasSystemCamera: Boolean, hasSystemAlbum: Boolean, files: M
         this.currentFolderLiveData.value = currentFolder
     }
 
-    fun setCurrentFolder(currentFolder: LocalMediaFolder?) {
+    fun setCurrentFolderNew(currentFolder: LocalMediaFolder?) {
         pageNo = 0
         this.currentFolderLiveDataNew.value = currentFolder
     }

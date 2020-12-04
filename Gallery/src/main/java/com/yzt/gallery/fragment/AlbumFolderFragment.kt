@@ -19,6 +19,7 @@ import com.yzt.gallery.activity.AlbumActivity
 import com.yzt.gallery.adapter.AlbumFolderAdapter
 import com.yzt.gallery.adapter.AlbumFolderAdapterNew
 import com.yzt.gallery.bean.AlbumFolder
+import com.yzt.gallery.repository.LocalMediaFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import com.yzt.gallery.util.*
 import com.yzt.gallery.viewModel.AlbumViewModel
@@ -72,6 +73,36 @@ class AlbumFolderFragment : Fragment() {
         adapter = AlbumFolderAdapterNew(null, activity)
         rv!!.adapter = adapter
         adapter!!.setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
+//        adapter!!.setOnItemClickListener { adapter, _, position ->
+//            if (AlbumClickUtil.isFastDoubleClick())
+//                return@setOnItemClickListener
+//
+//            if (position == lastPosition) {
+//                if (activity != null) {
+//                    (activity as AlbumActivity?)!!.closeDrawer()
+//                }
+//                return@setOnItemClickListener
+//            }
+//
+//            val bean = adapter.data[position] as AlbumFolder?
+//            bean?.let {
+//                it.isSelected = true
+//                adapter.notifyItemChanged(position)
+//                if (lastPosition == -1) {
+//                    lastPosition = 0
+//                }
+//                val lastBean = adapter.data[lastPosition] as AlbumFolder?
+//                lastBean?.let { itt ->
+//                    itt.isSelected = false
+//                    adapter.notifyItemChanged(lastPosition)
+//                }
+//                viewModel!!.setCurrentFolder(it)
+//                if (activity != null) {
+//                    (activity as AlbumActivity?)!!.closeDrawer()
+//                }
+//                lastPosition = position
+//            }
+//        }
         adapter!!.setOnItemClickListener { adapter, _, position ->
             if (AlbumClickUtil.isFastDoubleClick())
                 return@setOnItemClickListener
@@ -83,19 +114,19 @@ class AlbumFolderFragment : Fragment() {
                 return@setOnItemClickListener
             }
 
-            val bean = adapter.data[position] as AlbumFolder?
+            val bean = adapter.data[position] as LocalMediaFolder?
             bean?.let {
-                it.isSelected = true
+                it.isChecked = true
                 adapter.notifyItemChanged(position)
                 if (lastPosition == -1) {
                     lastPosition = 0
                 }
-                val lastBean = adapter.data[lastPosition] as AlbumFolder?
+                val lastBean = adapter.data[lastPosition] as LocalMediaFolder?
                 lastBean?.let { itt ->
-                    itt.isSelected = false
+                    itt.isChecked = false
                     adapter.notifyItemChanged(lastPosition)
                 }
-                viewModel!!.setCurrentFolder(it)
+                viewModel!!.setCurrentFolderNew(it)
                 if (activity != null) {
                     (activity as AlbumActivity?)!!.closeDrawer()
                 }
@@ -119,7 +150,7 @@ class AlbumFolderFragment : Fragment() {
                 .compose(AlbumRxSchedulers.normalSchedulers())
                 .subscribe { folders ->
                     adapter!!.setList(folders)
-                    viewModel!!.setCurrentFolder(folders[0])
+                    viewModel!!.setCurrentFolderNew(folders[0])
                 }
         )
         return view

@@ -33,20 +33,7 @@ class AlbumFolderAdapterNew(data: MutableList<LocalMediaFolder>?, activity: Acti
         val iv = holder.getView<AppCompatImageView>(R.id.iv)
         val tvName = holder.getView<AppCompatTextView>(R.id.tv_name)
         val tvCount = holder.getView<AppCompatTextView>(R.id.tv_count)
-//        vSelected.visibility = if (item.isSelected) View.VISIBLE else View.GONE
-//        item.coverImage?.let {
-//            activity?.let { activity ->
-//                if (!activity.isFinishing) {
-//                    Glide
-//                            .with(context)
-//                            .load(it)
-//                            .transition(DrawableTransitionOptions.withCrossFade())
-//                            .into(iv)
-//                }
-//            }
-//        }
-//        tvName.text = item.name
-//        tvCount.text = context.getString(R.string.count, item.count)
+        vSelected.visibility = if (item.isChecked) View.VISIBLE else View.GONE
         item.firstImagePath?.let {
             activity?.let { activity ->
                 if (!activity.isFinishing) {
