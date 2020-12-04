@@ -2,9 +2,13 @@ package com.yzt.gallery.repository
 
 import android.database.Cursor
 import android.net.Uri
+import android.os.Bundle
 import android.provider.MediaStore
+import android.text.TextUtils
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
+import com.yzt.gallery.bean.AlbumFile
+import com.yzt.gallery.key.AlbumFileType
 import com.yzt.gallery.util.AlbumLogUtil
 import io.reactivex.Observable
 import java.util.*
@@ -63,6 +67,19 @@ class AlbumRepositoryNew {
         COLUMN_BUCKET_DISPLAY_NAME,
         MediaStore.MediaColumns.MIME_TYPE,
         "COUNT(*) AS $COLUMN_COUNT"
+    )
+
+    private val projection_page = arrayOf(
+        MediaStore.Files.FileColumns._ID,
+        MediaStore.MediaColumns.DATA,
+        MediaStore.MediaColumns.MIME_TYPE,
+        MediaStore.MediaColumns.WIDTH,
+        MediaStore.MediaColumns.HEIGHT,
+        MediaStore.MediaColumns.DURATION,
+        MediaStore.MediaColumns.SIZE,
+        MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+        MediaStore.MediaColumns.DISPLAY_NAME,
+        COLUMN_BUCKET_ID
     )
 
     fun getFolders(): Observable<MutableList<LocalMediaFolder>> {
@@ -162,7 +179,8 @@ class AlbumRepositoryNew {
                             Album.get()!!.getContext()!!.getString(R.string.picture_camera_roll)
                         allMediaFolder.name = bucketDisplayName
                         allMediaFolder.imageNum = totalCount
-                        //                    allMediaFolder.ofAllType = config.chooseMode
+//                        allMediaFolder.ofAllType = config.chooseMode
+                        allMediaFolder.ofAllType = PictureMimeType.ofImage()
                         allMediaFolder.isChecked = true
                         allMediaFolder.isCameraFolder = true
                         mediaFolders.add(0, allMediaFolder)
@@ -177,6 +195,175 @@ class AlbumRepositoryNew {
             }
 
             emitter.onNext(mediaFolders)
+        }
+    }
+
+    fun getFiles(
+        hasSystemCamera: Boolean,
+        hasSystemAlbum: Boolean,
+        bucketId: Long,
+        page: Int,
+        pageSize: Int
+    ): Observable<MutableList<LocalMedia>> {
+        return Observable.create { emitter ->
+            val files: MutableList<LocalMedia> = ArrayList()
+            var data: Cursor? = null
+
+            try {
+                data = if (SdkVersionUtils.checkedAndroid_R()) {
+                    val queryArgs: Bundle = MediaUtils.createQueryArgsBundle(
+                        getPageSelection(bucketId),
+                        getPageSelectionArgs(bucketId),
+                        pageSize,
+                        (page - 1) * pageSize
+                    )
+                    Album.get()!!.getContext()!!.contentResolver.query(
+                        uri,
+                        projection_page,
+                        queryArgs,
+                        null
+                    )
+                } else {
+                    val orderBy =
+                        if (page == -1) MediaStore.Files.FileColumns._ID + " DESC" else MediaStore.Files.FileColumns._ID + " DESC limit " + pageSize + " offset " + (page - 1) * pageSize
+                    Album.get()!!.getContext()!!.contentResolver.query(
+                        uri,
+                        projection_page,
+                        getPageSelection(bucketId),
+                        getPageSelectionArgs(bucketId),
+                        orderBy
+                    )
+                }
+                if (data != null) {
+                    if (data.count > 0) {
+                        val idColumn = data.getColumnIndexOrThrow(
+                            projection_page[0]
+                        )
+                        val dataColumn = data.getColumnIndexOrThrow(
+                            projection_page[1]
+                        )
+                        val mimeTypeColumn = data.getColumnIndexOrThrow(
+                            projection_page[2]
+                        )
+                        val widthColumn = data.getColumnIndexOrThrow(
+                            projection_page[3]
+                        )
+                        val heightColumn = data.getColumnIndexOrThrow(
+                            projection_page[4]
+                        )
+                        val durationColumn = data.getColumnIndexOrThrow(
+                            projection_page[5]
+                        )
+                        val sizeColumn = data.getColumnIndexOrThrow(
+                            projection_page[6]
+                        )
+                        val folderNameColumn = data.getColumnIndexOrThrow(
+                            projection_page[7]
+                        )
+                        val fileNameColumn = data.getColumnIndexOrThrow(
+                            projection_page[8]
+                        )
+                        val bucketIdColumn = data.getColumnIndexOrThrow(
+                            projection_page[9]
+                        )
+                        data.moveToFirst()
+                        do {
+                            val id = data.getLong(idColumn)
+                            val absolutePath = data.getString(dataColumn)
+                            val url =
+                                if (SdkVersionUtils.checkedAndroid_Q()) getRealPathAndroid_Q(
+                                    id
+                                ) else absolutePath
+//                            if (config.isFilterInvalidFile) {
+//                                if (!PictureFileUtils.isFileExists(absolutePath)) {
+//                                    continue
+//                                }
+//                            }
+                            var mimeType = data.getString(mimeTypeColumn)
+                            mimeType =
+                                if (TextUtils.isEmpty(mimeType)) PictureMimeType.ofJPEG() else mimeType
+                            // Here, it is solved that some models obtain mimeType and return the format of image / *,
+                            // which makes it impossible to distinguish the specific type, such as mi 8,9,10 and other models
+                            if (mimeType.endsWith("image/*")) {
+                                mimeType = if (PictureMimeType.isContent(url)) {
+                                    PictureMimeType.getImageMimeType(absolutePath)
+                                } else {
+                                    PictureMimeType.getImageMimeType(url)
+                                }
+//                                if (!config.isGif) {
+//                                    if (PictureMimeType.isGif(mimeType)) {
+//                                        continue
+//                                    }
+//                                }
+                            }
+//                            if (!config.isWebp) {
+//                                if (mimeType.startsWith(PictureMimeType.ofWEBP())) {
+//                                    continue
+//                                }
+//                            }
+//                            if (!config.isBmp) {
+//                                if (mimeType.startsWith(PictureMimeType.ofBMP())) {
+//                                    continue
+//                                }
+//                            }
+                            val width = data.getInt(widthColumn)
+                            val height = data.getInt(heightColumn)
+                            val duration = data.getLong(durationColumn)
+                            val size = data.getLong(sizeColumn)
+                            val folderName = data.getString(folderNameColumn)
+                            val fileName = data.getString(fileNameColumn)
+                            val bucket_id = data.getLong(bucketIdColumn)
+//                            if (config.filterFileSize > 0) {
+//                                if (size > config.filterFileSize * FILE_SIZE_UNIT) {
+//                                    continue
+//                                }
+//                            }
+//                            if (PictureMimeType.isHasVideo(mimeType)) {
+//                                if (config.videoMinSecond > 0 && duration < config.videoMinSecond) {
+//                                    // If you set the minimum number of seconds of video to display
+//                                    continue
+//                                }
+//                                if (config.videoMaxSecond > 0 && duration > config.videoMaxSecond) {
+//                                    // If you set the maximum number of seconds of video to display
+//                                    continue
+//                                }
+//                                if (duration == 0L) {
+//                                    //If the length is 0, the corrupted video is processed and filtered out
+//                                    continue
+//                                }
+//                                if (size <= 0) {
+//                                    // The video size is 0 to filter out
+//                                    continue
+//                                }
+//                            }
+                            val image = LocalMedia(
+                                id,
+                                url,
+                                absolutePath,
+                                fileName,
+                                folderName,
+                                duration,
+//                                config.chooseMode,
+                                PictureMimeType.ofImage(),
+                                mimeType,
+                                width,
+                                height,
+                                size,
+                                bucket_id
+                            )
+                            files.add(image)
+                        } while (data.moveToNext())
+                    }
+//                    return MediaData(data.count > 0, result)
+                }
+            } catch (e: Exception) {
+                AlbumLogUtil.e(e.message)
+            } finally {
+                if (data != null && !data.isClosed) {
+                    data.close()
+                }
+            }
+            emitter.onNext(files)
         }
     }
 
@@ -218,6 +405,56 @@ class AlbumRepositoryNew {
 
     private fun getFirstUrl(cursor: Cursor): String {
         return cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA))
+    }
+
+    private fun getPageSelectionArgs(bucketId: Long): Array<String> {
+        return getSelectionArgsForPageSingleMediaType(
+            MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE,
+            bucketId
+        )
+    }
+
+    private fun getPageSelection(bucketId: Long): String {
+        if (bucketId == -1L) {
+            return ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                    + " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF
+                    + ") AND " + MediaStore.MediaColumns.SIZE + ">0")
+        }
+        return ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                + " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF
+                + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0")
+    }
+
+    private fun getSelectionArgsForPageSingleMediaType(
+        mediaType: Int,
+        bucketId: Long
+    ): Array<String> {
+        return if (bucketId == -1L) arrayOf(mediaType.toString()) else arrayOf(
+            mediaType.toString(),
+            ValueOf.toString(bucketId)
+        )
+    }
+
+    fun getSystemCamera(): Observable<MutableList<LocalMedia>> {
+        return Observable.create { emitter ->
+            val file = LocalMedia()
+//            file.isCamera = true
+//            file.itemType = AlbumFileType.SYSTEM_CAMERA.ordinal
+            val files: MutableList<LocalMedia> = ArrayList()
+            files.add(file)
+            emitter.onNext(files)
+        }
+    }
+
+    fun getSystemAlbum(): Observable<MutableList<LocalMedia>> {
+        return Observable.create { emitter ->
+            val file = LocalMedia()
+//            file.isCamera = true
+//            file.itemType = AlbumFileType.SYSTEM_ALBUM.ordinal
+            val files: MutableList<LocalMedia> = ArrayList()
+            files.add(file)
+            emitter.onNext(files)
+        }
     }
 
 }

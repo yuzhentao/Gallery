@@ -32,12 +32,15 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
 import com.yzt.gallery.adapter.AlbumFileAdapter
+import com.yzt.gallery.adapter.AlbumFileAdapterNew
 import com.yzt.gallery.bean.AlbumFile
 import com.yzt.gallery.fragment.AlbumFolderFragment
 import com.yzt.gallery.key.AlbumConstants
 import com.yzt.gallery.key.AlbumFileType
 import com.yzt.gallery.key.AlbumKeys
 import com.yzt.gallery.listener.AlbumDoubleClickListener
+import com.yzt.gallery.repository.LocalMedia
+import com.yzt.gallery.repository.LocalMediaFolder
 import com.yzt.gallery.util.*
 import com.yzt.gallery.view.AlbumLoadMoreView
 import com.yzt.gallery.viewModel.AlbumViewModel
@@ -77,7 +80,8 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
     private val layoutManager by lazy {
         AlbumGridLayoutManager(this@AlbumActivity, 3)
     }
-    private var adapter: AlbumFileAdapter? = null
+//    private var adapter: AlbumFileAdapter? = null
+    private var adapter: AlbumFileAdapterNew? = null
 
     private var rxPermissions: RxPermissions? = null
     private var permissionsDisposable: Disposable? = null
@@ -279,28 +283,34 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         val itemDecoration = AlbumGridItemDecoration(3, AlbumDimenUtil.dp2px(context,2), false)
         rv.addItemDecoration(itemDecoration)
         (rv.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        adapter = AlbumFileAdapter(null, activity)
+//        adapter = AlbumFileAdapter(null, activity)
+        adapter = AlbumFileAdapterNew(null, activity)
         rv.adapter = adapter
         adapter!!.setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
         adapter!!.loadMoreModule.isEnableLoadMore = true
         adapter!!.loadMoreModule.loadMoreView = AlbumLoadMoreView(AlbumLoadMoreView.LOAD_MORE_VERTICAL)
         adapter!!.loadMoreModule.setOnLoadMoreListener {
-            viewModel?.getFiles()
+//            viewModel?.getFiles()
+            viewModel?.getFilesNew()
         }
         adapter!!.setOnItemClickListener { adapter, _, position ->
-            val file = adapter.data[position] as AlbumFile?
+//            val file = adapter.data[position] as AlbumFile?
+//            file?.let {
+//                when (it.itemType) {
+//                    AlbumFileType.SYSTEM_CAMERA.ordinal -> {
+//                        openSystemCamera()
+//                    }
+//                    AlbumFileType.SYSTEM_ALBUM.ordinal -> {
+//                        openSystemGallery()
+//                    }
+//                    AlbumFileType.FILE.ordinal -> {
+//                        clickItem(it, position)
+//                    }
+//                }
+//            }
+            val file = adapter.data[position] as LocalMedia?
             file?.let {
-                when (it.itemType) {
-                    AlbumFileType.SYSTEM_CAMERA.ordinal -> {
-                        openSystemCamera()
-                    }
-                    AlbumFileType.SYSTEM_ALBUM.ordinal -> {
-                        openSystemGallery()
-                    }
-                    AlbumFileType.FILE.ordinal -> {
-                        clickItem(it, position)
-                    }
-                }
+                clickItemNew(it, position)
             }
         }
         val folderFragment = AlbumFolderFragment()
@@ -320,12 +330,25 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         viewModelFactory = AlbumViewModelFactory(hasSystemCamera, hasSystemAlbum, null)
         viewModel = ViewModelProvider(activity, viewModelFactory!!).get(AlbumViewModel::class.java)
         viewModel?.let {
-            it.folderNameLiveData!!.observe(this, Observer { _ ->
+//            it.folderNameLiveData!!.observe(this, Observer { _ ->
+//                adapter!!.setList(null)
+//                it.getFiles()
+//                selectedCount = 0
+//            })
+//            it.filesLiveData.observe(this, Observer { files ->
+//                if (files != null && files.size > 0) {
+//                    adapter!!.addData(files)
+//                    adapter!!.loadMoreModule.loadMoreComplete()
+//                } else {
+//                    adapter!!.loadMoreModule.loadMoreEnd()
+//                }
+//            })
+            it.folderNameLiveDataNew!!.observe(this, Observer { _ ->
                 adapter!!.setList(null)
-                it.getFiles()
+                it.getFilesNew()
                 selectedCount = 0
             })
-            it.filesLiveData.observe(this, Observer { files ->
+            it.filesLiveDataNew.observe(this, Observer { files ->
                 if (files != null && files.size > 0) {
                     adapter!!.addData(files)
                     adapter!!.loadMoreModule.loadMoreComplete()
@@ -375,6 +398,44 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
             tvPreview.isEnabled = selectedCount > 0
             tvConfirm.isEnabled = selectedCount > 0
             tvConfirm.text = if (selectedCount > 0) getString(R.string.confirm_selected_count, selectedCount) else getString(R.string.confirm)
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun clickItemNew(file: LocalMedia?, position: Int) {
+        file?.let {
+//            if (selectedCount >= maxSelectedCount && !it.isSelected) {
+//                AlbumToastUtil.shortCenter(getString(R.string.max_selected_count, maxSelectedCount))
+//                return
+//            }
+//            it.isSelected = !it.isSelected
+//            if (it.isSelected) {
+//                selectedCount++
+//            } else {
+//                selectedCount--
+//                if (selectedCount < 0) {
+//                    selectedCount = 0
+//                }
+//                for (index in (adapter!!.data as MutableList<AlbumFile>).indices) {
+//                    val tempFile = (adapter!!.data as MutableList<AlbumFile>)[index]
+//                    if (tempFile.isCamera || tempFile.isAlbum)
+//                        continue
+//
+//                    if (tempFile.isSelected && tempFile.selectedNo > it.selectedNo) {
+//                        tempFile.selectedNo = tempFile.selectedNo - 1
+//                        adapter!!.notifyItemChanged(index)
+//                    }
+//                    if (!tempFile.isSelected && tempFile.selectedNo == 1) {
+//                        tempFile.selectedNo = 0
+//                        adapter!!.notifyItemChanged(index)
+//                    }
+//                }
+//            }
+//            it.selectedNo = selectedCount
+//            adapter!!.notifyItemChanged(position)
+//            tvPreview.isEnabled = selectedCount > 0
+//            tvConfirm.isEnabled = selectedCount > 0
+//            tvConfirm.text = if (selectedCount > 0) getString(R.string.confirm_selected_count, selectedCount) else getString(R.string.confirm)
         }
     }
 
