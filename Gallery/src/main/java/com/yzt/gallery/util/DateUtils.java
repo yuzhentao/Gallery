@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
  * @date：2017-5-25 23:30
  * @describe：DateUtils
  */
-
 public class DateUtils {
+
     private static SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd_HHmmssSS");
 
     /**
@@ -76,4 +76,5 @@ public class DateUtils {
         long diff = eTime - sTime;
         return diff > 1000 ? diff / 1000 + "秒" : diff + "毫秒";
     }
+
 }
