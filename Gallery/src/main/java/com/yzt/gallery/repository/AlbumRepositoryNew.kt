@@ -7,6 +7,8 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
+import com.yzt.gallery.bean.LocalMedia
+import com.yzt.gallery.bean.LocalMediaFolder
 import com.yzt.gallery.key.AlbumFileType
 import com.yzt.gallery.util.AlbumLogUtil
 import io.reactivex.Observable
@@ -30,45 +32,37 @@ class AlbumRepositoryNew {
         val holder = AlbumRepositoryNew()
     }
 
-    private val ORDER_BY = MediaStore.Files.FileColumns._ID + " DESC" //排序规则
-    private val NOT_GIF_UNKNOWN = "!='image/*'"
-    private val NOT_GIF = "!='image/gif' AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF_UNKNOWN
-    private val GROUP_BY_BUCKET_Id = " GROUP BY (bucket_id"
-    private val COLUMN_COUNT = "count"
-    private val COLUMN_BUCKET_ID = "bucket_id"
-    private val COLUMN_BUCKET_DISPLAY_NAME = "bucket_display_name"
+    private val notGifUnknown = "!='image/*'"
+    private val notGif = "!='image/gif' AND " + MediaStore.MediaColumns.MIME_TYPE + notGifUnknown
+    private val groupByBucketId = " GROUP BY (bucket_id"
+    private val columnCount = "count"
+    private val columnBucketId = "bucket_id"
+    private val columnBucketDisplayName = "bucket_display_name"
 
-    /**
-     * unit
-     */
-    private val FILE_SIZE_UNIT = 1024 * 1024L
-
-    /**
-     * Image
-     */
-    private val SELECTION = ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? )"
-            + " AND " + MediaStore.MediaColumns.SIZE + ">0)" + GROUP_BY_BUCKET_Id)
-
-    private val SELECTION_29 = (MediaStore.Files.FileColumns.MEDIA_TYPE + "=? "
-            + " AND " + MediaStore.MediaColumns.SIZE + ">0")
+    private val fileSizeUnit = 1024 * 1024L
 
     private val uri: Uri = MediaStore.Files.getContentUri("external")//统一资源标志符
-    private val projection_29 = arrayOf(
-        MediaStore.Files.FileColumns._ID,
-        COLUMN_BUCKET_ID,
-        COLUMN_BUCKET_DISPLAY_NAME,
-        MediaStore.MediaColumns.MIME_TYPE
-    )
     private val projection = arrayOf(
         MediaStore.Files.FileColumns._ID,
         MediaStore.MediaColumns.DATA,
-        COLUMN_BUCKET_ID,
-        COLUMN_BUCKET_DISPLAY_NAME,
+        columnBucketId,
+        columnBucketDisplayName,
         MediaStore.MediaColumns.MIME_TYPE,
-        "COUNT(*) AS $COLUMN_COUNT"
+        "COUNT(*) AS $columnCount"
     )
+    private val projection29 = arrayOf(
+        MediaStore.Files.FileColumns._ID,
+        columnBucketId,
+        columnBucketDisplayName,
+        MediaStore.MediaColumns.MIME_TYPE
+    )
+    private val selection =
+        ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? )" + " AND " + MediaStore.MediaColumns.SIZE + ">0)" + groupByBucketId)
+    private val selection29 =
+        (MediaStore.Files.FileColumns.MEDIA_TYPE + "=? " + " AND " + MediaStore.MediaColumns.SIZE + ">0")
+    private val sortOrder = MediaStore.Files.FileColumns._ID + " DESC"
 
-    private val projection_page = arrayOf(
+    private val projectionFile = arrayOf(
         MediaStore.Files.FileColumns._ID,
         MediaStore.MediaColumns.DATA,
         MediaStore.MediaColumns.MIME_TYPE,
@@ -78,31 +72,33 @@ class AlbumRepositoryNew {
         MediaStore.MediaColumns.SIZE,
         MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
         MediaStore.MediaColumns.DISPLAY_NAME,
-        COLUMN_BUCKET_ID
+        columnBucketId
     )
 
+    /**
+     * 获取文件夹
+     */
     fun getFolders(): Observable<MutableList<LocalMediaFolder>> {
         return Observable.create { emitter ->
-            val mediaFolders: MutableList<LocalMediaFolder> = ArrayList()
-
-            val data: Cursor? = Album.get()!!.getContext()!!.contentResolver.query(
+            val folders: MutableList<LocalMediaFolder> = mutableListOf()
+            val cursor: Cursor? = Album.get()!!.getContext()!!.contentResolver.query(
                 uri,
-                if (SdkVersionUtils.checkedAndroid_Q()) projection_29 else projection,
+                getProjection(),
                 getSelection(),
                 getSelectionArgs(),
-                ORDER_BY
+                sortOrder
             )
 
             try {
-                if (data != null) {
-                    val count = data.count
+                if (cursor != null) {
+                    val count = cursor.count
                     var totalCount = 0
                     if (count > 0) {
                         if (SdkVersionUtils.checkedAndroid_Q()) {//API>=29
-                            val countMap: MutableMap<Long, Long> = HashMap()
-                            while (data.moveToNext()) {
+                            val countMap: MutableMap<Long, Long> = mutableMapOf()
+                            while (cursor.moveToNext()) {
                                 val bucketId =
-                                    data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID))
+                                    cursor.getLong(cursor.getColumnIndex(columnBucketId))
                                 var newCount = countMap[bucketId]
                                 if (newCount == null) {
                                     newCount = 1L
@@ -111,92 +107,96 @@ class AlbumRepositoryNew {
                                 }
                                 countMap[bucketId] = newCount
                             }
-                            if (data.moveToFirst()) {
-                                val hashSet: MutableSet<Long> = HashSet()
+                            if (cursor.moveToFirst()) {
+                                val set: MutableSet<Long> = mutableSetOf()
                                 do {
                                     val bucketId =
-                                        data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID))
-                                    if (hashSet.contains(bucketId)) {
+                                        cursor.getLong(cursor.getColumnIndex(columnBucketId))
+                                    if (set.contains(bucketId)) {
                                         continue
                                     }
+
+                                    val id =
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID))
                                     val bucketDisplayName =
-                                        data.getString(
-                                            data.getColumnIndex(
-                                                COLUMN_BUCKET_DISPLAY_NAME
+                                        cursor.getString(
+                                            cursor.getColumnIndex(
+                                                columnBucketDisplayName
                                             )
                                         )
                                     val size = countMap[bucketId]!!
-                                    val id =
-                                        data.getLong(data.getColumnIndex(MediaStore.Files.FileColumns._ID))
-                                    val mediaFolder = LocalMediaFolder()
-                                    mediaFolder.bucketId = bucketId
-                                    mediaFolder.firstImagePath =
-                                        getRealPathAndroid_Q(
+                                    val folder =
+                                        LocalMediaFolder()
+                                    folder.bucketId = bucketId
+                                    folder.firstImagePath =
+                                        getRealPathAndroidQ(
                                             id
                                         )
-                                    mediaFolder.name = bucketDisplayName
-                                    mediaFolder.imageNum = ValueOf.toInt(size)
-                                    mediaFolders.add(mediaFolder)
-                                    hashSet.add(bucketId)
+                                    folder.name = bucketDisplayName
+                                    folder.imageNum = ValueOf.toInt(size)
+                                    folders.add(folder)
+                                    set.add(bucketId)
                                     totalCount += size.toInt()
-                                } while (data.moveToNext())
+                                } while (cursor.moveToNext())
                             }
                         } else {
-                            data.moveToFirst()
+                            cursor.moveToFirst()
                             do {
                                 val bucketId =
-                                    data.getLong(data.getColumnIndex(COLUMN_BUCKET_ID))
+                                    cursor.getLong(cursor.getColumnIndex(columnBucketId))
                                 val url =
-                                    data.getString(data.getColumnIndex(MediaStore.MediaColumns.DATA))
+                                    cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA))
                                 val bucketDisplayName =
-                                    data.getString(data.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME))
+                                    cursor.getString(cursor.getColumnIndex(columnBucketDisplayName))
                                 val size =
-                                    data.getInt(data.getColumnIndex(COLUMN_COUNT))
-                                val mediaFolder = LocalMediaFolder()
-                                mediaFolder.bucketId = bucketId
-                                mediaFolder.firstImagePath = url
-                                mediaFolder.name = bucketDisplayName
-                                mediaFolder.imageNum = size
-                                mediaFolders.add(mediaFolder)
+                                    cursor.getInt(cursor.getColumnIndex(columnCount))
+                                val folder =
+                                    LocalMediaFolder()
+                                folder.bucketId = bucketId
+                                folder.firstImagePath = url
+                                folder.name = bucketDisplayName
+                                folder.imageNum = size
+                                folders.add(folder)
                                 totalCount += size
-                            } while (data.moveToNext())
+                            } while (cursor.moveToNext())
                         }
 
-                        sortFolder(mediaFolders)
+                        sortFolders(folders)
 
-                        // 相机胶卷
-                        val allMediaFolder = LocalMediaFolder()
-                        allMediaFolder.bucketId = -1
-                        if (data.moveToFirst()) {
-                            val firstUrl: String =
-                                if (SdkVersionUtils.checkedAndroid_Q()) getFirstUri(
-                                    data
-                                ) else getFirstUrl(data)
-                            allMediaFolder.firstImagePath = firstUrl
-                        }
                         val bucketDisplayName: String =
                             Album.get()!!.getContext()!!.getString(R.string.picture_camera_roll)
-                        allMediaFolder.name = bucketDisplayName
-                        allMediaFolder.imageNum = totalCount
-//                        allMediaFolder.ofAllType = config.chooseMode
-                        allMediaFolder.ofAllType = PictureMimeType.ofImage()
-                        allMediaFolder.isChecked = true
-                        allMediaFolder.isCameraFolder = true
-                        mediaFolders.add(0, allMediaFolder)
+                        val allFolder =
+                            LocalMediaFolder()//所有照片
+                        allFolder.bucketId = -1
+                        if (cursor.moveToFirst()) {
+                            val firstUrl: String =
+                                if (SdkVersionUtils.checkedAndroid_Q()) getFirstUri(
+                                    cursor
+                                ) else getFirstUrl(cursor)
+                            allFolder.firstImagePath = firstUrl
+                        }
+                        allFolder.name = bucketDisplayName
+                        allFolder.imageNum = totalCount
+                        allFolder.ofAllType = PictureMimeType.ofImage()
+                        allFolder.isSelected = true
+                        allFolder.isCameraFolder = true
+                        folders.add(0, allFolder)
                     }
                 }
             } catch (e: Exception) {
                 AlbumLogUtil.e(e.message)
             } finally {
-                if (data != null && !data.isClosed) {
-                    data.close()
+                if (cursor != null && !cursor.isClosed) {
+                    cursor.close()
                 }
             }
-
-            emitter.onNext(mediaFolders)
+            emitter.onNext(folders)
         }
     }
 
+    /**
+     * 获取文件
+     */
     fun getFiles(
         hasSystemCamera: Boolean,
         hasSystemAlbum: Boolean,
@@ -205,136 +205,104 @@ class AlbumRepositoryNew {
         pageSize: Int
     ): Observable<MutableList<LocalMedia>> {
         return Observable.create { emitter ->
-            val files: MutableList<LocalMedia> = ArrayList()
-            var data: Cursor? = null
+            val files: MutableList<LocalMedia> = mutableListOf()
+            var cursor: Cursor? = null
 
             try {
-                data = if (SdkVersionUtils.checkedAndroid_R()) {
-                    val queryArgs: Bundle = MediaUtils.createQueryArgsBundle(
-                        getPageSelection(bucketId),
-                        getPageSelectionArgs(bucketId),
+                cursor = if (SdkVersionUtils.checkedAndroid_R()) {//API>=30
+                    val queryArgsFile: Bundle = MediaUtils.createQueryArgsBundle(
+                        getSelectionFile(bucketId),
+                        getSelectionArgsFile(bucketId),
                         pageSize,
                         (page - 1) * pageSize
                     )
                     Album.get()!!.getContext()!!.contentResolver.query(
                         uri,
-                        projection_page,
-                        queryArgs,
+                        projectionFile,
+                        queryArgsFile,
                         null
                     )
                 } else {
-                    val orderBy =
+                    val sortOrderFile =
                         if (page == -1) MediaStore.Files.FileColumns._ID + " DESC" else MediaStore.Files.FileColumns._ID + " DESC limit " + pageSize + " offset " + (page - 1) * pageSize
                     Album.get()!!.getContext()!!.contentResolver.query(
                         uri,
-                        projection_page,
-                        getPageSelection(bucketId),
-                        getPageSelectionArgs(bucketId),
-                        orderBy
+                        projectionFile,
+                        getSelectionFile(bucketId),
+                        getSelectionArgsFile(bucketId),
+                        sortOrderFile
                     )
                 }
-                if (data != null) {
-                    if (data.count > 0) {
-                        val idColumn = data.getColumnIndexOrThrow(
-                            projection_page[0]
+                if (cursor != null) {
+                    if (cursor.count > 0) {
+                        val idColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[0]
                         )
-                        val dataColumn = data.getColumnIndexOrThrow(
-                            projection_page[1]
+                        val dataColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[1]
                         )
-                        val mimeTypeColumn = data.getColumnIndexOrThrow(
-                            projection_page[2]
+                        val mimeTypeColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[2]
                         )
-                        val widthColumn = data.getColumnIndexOrThrow(
-                            projection_page[3]
+                        val widthColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[3]
                         )
-                        val heightColumn = data.getColumnIndexOrThrow(
-                            projection_page[4]
+                        val heightColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[4]
                         )
-                        val durationColumn = data.getColumnIndexOrThrow(
-                            projection_page[5]
+                        val durationColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[5]
                         )
-                        val sizeColumn = data.getColumnIndexOrThrow(
-                            projection_page[6]
+                        val sizeColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[6]
                         )
-                        val folderNameColumn = data.getColumnIndexOrThrow(
-                            projection_page[7]
+                        val folderNameColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[7]
                         )
-                        val fileNameColumn = data.getColumnIndexOrThrow(
-                            projection_page[8]
+                        val fileNameColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[8]
                         )
-                        val bucketIdColumn = data.getColumnIndexOrThrow(
-                            projection_page[9]
+                        val bucketIdColumn = cursor.getColumnIndexOrThrow(
+                            projectionFile[9]
                         )
-                        data.moveToFirst()
+                        cursor.moveToFirst()
                         do {
-                            val id = data.getLong(idColumn)
-                            val absolutePath = data.getString(dataColumn)
+                            val id = cursor.getLong(idColumn)
+                            val absolutePath = cursor.getString(dataColumn)
                             val url =
-                                if (SdkVersionUtils.checkedAndroid_Q()) getRealPathAndroid_Q(
+                                if (SdkVersionUtils.checkedAndroid_Q()) getRealPathAndroidQ(
                                     id
                                 ) else absolutePath
-//                            if (config.isFilterInvalidFile) {
-//                                if (!PictureFileUtils.isFileExists(absolutePath)) {
-//                                    continue
-//                                }
-//                            }
-                            var mimeType = data.getString(mimeTypeColumn)
+                            if (!PictureFileUtils.isFileExists(absolutePath)) {//过滤无效文件
+                                continue
+                            }
+
+                            var mimeType = cursor.getString(mimeTypeColumn)
                             mimeType =
                                 if (TextUtils.isEmpty(mimeType)) PictureMimeType.ofJPEG() else mimeType
-                            // Here, it is solved that some models obtain mimeType and return the format of image / *,
-                            // which makes it impossible to distinguish the specific type, such as mi 8,9,10 and other models
                             if (mimeType.endsWith("image/*")) {
                                 mimeType = if (PictureMimeType.isContent(url)) {
                                     PictureMimeType.getImageMimeType(absolutePath)
                                 } else {
                                     PictureMimeType.getImageMimeType(url)
                                 }
-//                                if (!config.isGif) {
-//                                    if (PictureMimeType.isGif(mimeType)) {
-//                                        continue
-//                                    }
-//                                }
+                                if (PictureMimeType.isGif(mimeType)) {//过滤GIF
+                                    continue
+                                }
                             }
-//                            if (!config.isWebp) {
-//                                if (mimeType.startsWith(PictureMimeType.ofWEBP())) {
-//                                    continue
-//                                }
-//                            }
-//                            if (!config.isBmp) {
-//                                if (mimeType.startsWith(PictureMimeType.ofBMP())) {
-//                                    continue
-//                                }
-//                            }
-                            val width = data.getInt(widthColumn)
-                            val height = data.getInt(heightColumn)
-                            val duration = data.getLong(durationColumn)
-                            val size = data.getLong(sizeColumn)
-                            val folderName = data.getString(folderNameColumn)
-                            val fileName = data.getString(fileNameColumn)
-                            val bucket_id = data.getLong(bucketIdColumn)
-//                            if (config.filterFileSize > 0) {
-//                                if (size > config.filterFileSize * FILE_SIZE_UNIT) {
-//                                    continue
-//                                }
-//                            }
-//                            if (PictureMimeType.isHasVideo(mimeType)) {
-//                                if (config.videoMinSecond > 0 && duration < config.videoMinSecond) {
-//                                    // If you set the minimum number of seconds of video to display
-//                                    continue
-//                                }
-//                                if (config.videoMaxSecond > 0 && duration > config.videoMaxSecond) {
-//                                    // If you set the maximum number of seconds of video to display
-//                                    continue
-//                                }
-//                                if (duration == 0L) {
-//                                    //If the length is 0, the corrupted video is processed and filtered out
-//                                    continue
-//                                }
-//                                if (size <= 0) {
-//                                    // The video size is 0 to filter out
-//                                    continue
-//                                }
-//                            }
+                            if (mimeType.startsWith(PictureMimeType.ofWEBP())) {//过滤WEBP
+                                continue
+                            }
+                            if (mimeType.startsWith(PictureMimeType.ofBMP())) {//过滤BMP
+                                continue
+                            }
+                            val width = cursor.getInt(widthColumn)
+                            val height = cursor.getInt(heightColumn)
+                            val duration = cursor.getLong(durationColumn)
+                            val size = cursor.getLong(sizeColumn)
+                            val folderName = cursor.getString(folderNameColumn)
+                            val fileName = cursor.getString(fileNameColumn)
+                            val bucketId = cursor.getLong(bucketIdColumn)
                             val image = LocalMedia(
                                 id,
                                 url,
@@ -342,28 +310,26 @@ class AlbumRepositoryNew {
                                 fileName,
                                 folderName,
                                 duration,
-//                                config.chooseMode,
                                 PictureMimeType.ofImage(),
                                 mimeType,
                                 width,
                                 height,
                                 size,
-                                bucket_id
+                                bucketId
                             )
                             image.itemType = AlbumFileType.FILE.ordinal
                             image.isSelected = false
                             image.isCamera = false
                             image.isAlbum = false
                             files.add(image)
-                        } while (data.moveToNext())
+                        } while (cursor.moveToNext())
                     }
-//                    return MediaData(data.count > 0, result)
                 }
             } catch (e: Exception) {
                 AlbumLogUtil.e(e.message)
             } finally {
-                if (data != null && !data.isClosed) {
-                    data.close()
+                if (cursor != null && !cursor.isClosed) {
+                    cursor.close()
                 }
             }
             for (index in files.indices) {
@@ -379,15 +345,43 @@ class AlbumRepositoryNew {
         }
     }
 
-    /**
-     * 获取查询条件
-     */
-    private fun getSelection(): String {
-        return if (SdkVersionUtils.checkedAndroid_Q()) SELECTION_29 else SELECTION
+    fun getSystemCamera(): Observable<MutableList<LocalMedia>> {
+        return Observable.create { emitter ->
+            val file = LocalMedia()
+            file.isCamera = true
+            file.itemType = AlbumFileType.SYSTEM_CAMERA.ordinal
+            val files: MutableList<LocalMedia> = mutableListOf()
+            files.add(file)
+            emitter.onNext(files)
+        }
+    }
+
+    fun getSystemAlbum(): Observable<MutableList<LocalMedia>> {
+        return Observable.create { emitter ->
+            val file = LocalMedia()
+            file.isAlbum = true
+            file.itemType = AlbumFileType.SYSTEM_ALBUM.ordinal
+            val files: MutableList<LocalMedia> = mutableListOf()
+            files.add(file)
+            emitter.onNext(files)
+        }
     }
 
     /**
-     * 获取查询条件属性值
+     * 由需要查询的列名组成的数组，如果为null则表示查询全部列
+     */
+    private fun getProjection() =
+        if (SdkVersionUtils.checkedAndroid_Q()) projection29 else projection
+
+    /**
+     * 类似SQL中的where子句，用于增加条件来完成数据过滤
+     */
+    private fun getSelection(): String {
+        return if (SdkVersionUtils.checkedAndroid_Q()) selection29 else selection
+    }
+
+    /**
+     * 用于替换selection中可以使用?表示的变量值
      */
     private fun getSelectionArgs(): Array<String> {
         return arrayOf(
@@ -395,8 +389,11 @@ class AlbumRepositoryNew {
         )
     }
 
-    private fun sortFolder(imageFolders: List<LocalMediaFolder>) {
-        Collections.sort(imageFolders, Comparator { lhs, rhs ->
+    /**
+     * 对文件夹进行排序
+     */
+    private fun sortFolders(folders: MutableList<LocalMediaFolder>) {
+        Collections.sort(folders, Comparator { lhs, rhs ->
             if (lhs.data == null || rhs.data == null) {
                 return@Comparator 0
             }
@@ -406,35 +403,22 @@ class AlbumRepositoryNew {
         })
     }
 
-    private fun getRealPathAndroid_Q(id: Long): String {
-        return uri.buildUpon().appendPath(ValueOf.toString(id)).build().toString()
+    private fun getSelectionFile(bucketId: Long): String {
+        if (bucketId == -1L) {
+            return ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                    + " AND " + MediaStore.MediaColumns.MIME_TYPE + notGif
+                    + ") AND " + MediaStore.MediaColumns.SIZE + ">0")
+        }
+        return ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                + " AND " + MediaStore.MediaColumns.MIME_TYPE + notGif
+                + ") AND " + columnBucketId + "=? AND " + MediaStore.MediaColumns.SIZE + ">0")
     }
 
-    private fun getFirstUri(cursor: Cursor): String {
-        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID))
-        return getRealPathAndroid_Q(id)
-    }
-
-    private fun getFirstUrl(cursor: Cursor): String {
-        return cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA))
-    }
-
-    private fun getPageSelectionArgs(bucketId: Long): Array<String> {
+    private fun getSelectionArgsFile(bucketId: Long): Array<String> {
         return getSelectionArgsForPageSingleMediaType(
             MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE,
             bucketId
         )
-    }
-
-    private fun getPageSelection(bucketId: Long): String {
-        if (bucketId == -1L) {
-            return ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-                    + " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF
-                    + ") AND " + MediaStore.MediaColumns.SIZE + ">0")
-        }
-        return ("(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-                + " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF
-                + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0")
     }
 
     private fun getSelectionArgsForPageSingleMediaType(
@@ -447,26 +431,17 @@ class AlbumRepositoryNew {
         )
     }
 
-    fun getSystemCamera(): Observable<MutableList<LocalMedia>> {
-        return Observable.create { emitter ->
-            val file = LocalMedia()
-            file.isCamera = true
-            file.itemType = AlbumFileType.SYSTEM_CAMERA.ordinal
-            val files: MutableList<LocalMedia> = ArrayList()
-            files.add(file)
-            emitter.onNext(files)
-        }
+    private fun getRealPathAndroidQ(id: Long): String {
+        return uri.buildUpon().appendPath(ValueOf.toString(id)).build().toString()
     }
 
-    fun getSystemAlbum(): Observable<MutableList<LocalMedia>> {
-        return Observable.create { emitter ->
-            val file = LocalMedia()
-            file.isAlbum = true
-            file.itemType = AlbumFileType.SYSTEM_ALBUM.ordinal
-            val files: MutableList<LocalMedia> = ArrayList()
-            files.add(file)
-            emitter.onNext(files)
-        }
+    private fun getFirstUrl(cursor: Cursor): String {
+        return cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA))
+    }
+
+    private fun getFirstUri(cursor: Cursor): String {
+        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID))
+        return getRealPathAndroidQ(id)
     }
 
 }

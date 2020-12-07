@@ -14,7 +14,7 @@ import com.gyf.immersionbar.ImmersionBar
 import com.yzt.gallery.R
 import com.yzt.gallery.adapter.AlbumPreviewAdapterNew
 import com.yzt.gallery.key.AlbumKeys
-import com.yzt.gallery.repository.LocalMedia
+import com.yzt.gallery.bean.LocalMedia
 import com.yzt.gallery.util.AlbumViewUtil
 import com.yzt.gallery.view.AlbumViewPager
 import java.util.*

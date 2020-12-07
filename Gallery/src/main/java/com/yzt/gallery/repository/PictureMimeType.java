@@ -12,8 +12,8 @@ import java.io.File;
  * @date：2017-5-24 17:02
  * @describe：PictureMimeType
  */
-
 public final class PictureMimeType {
+
     public static int ofAll() {
         return PictureConfig.TYPE_ALL;
     }
@@ -36,7 +36,6 @@ public final class PictureMimeType {
     public static int ofAudio() {
         return PictureConfig.TYPE_AUDIO;
     }
-
 
     public static String ofPNG() {
         return MIME_TYPE_PNG;
@@ -86,7 +85,6 @@ public final class PictureMimeType {
     private final static String MIME_TYPE_MPEG = "video/mpeg";
     private final static String MIME_TYPE_AVI = "video/avi";
 
-
     /**
      * isGif
      *
@@ -96,7 +94,6 @@ public final class PictureMimeType {
     public static boolean isGif(String mimeType) {
         return mimeType != null && (mimeType.equals("image/gif") || mimeType.equals("image/GIF"));
     }
-
 
     /**
      * isVideo
@@ -161,7 +158,6 @@ public final class PictureMimeType {
         }
         return mimeType.startsWith(MIME_TYPE_JPG);
     }
-
 
     /**
      * is Network image
@@ -243,7 +239,6 @@ public final class PictureMimeType {
         return MIME_TYPE_IMAGE;
     }
 
-
     /**
      * Picture or video
      *
@@ -281,7 +276,6 @@ public final class PictureMimeType {
         }
         return defaultSuffix;
     }
-
 
     /**
      * is content://
@@ -335,7 +329,6 @@ public final class PictureMimeType {
     public final static String MIME_TYPE_IMAGE = "image/jpeg";
     public final static String MIME_TYPE_VIDEO = "video/mp4";
     public final static String MIME_TYPE_AUDIO = "audio/mpeg";
-
 
     private final static String MIME_TYPE_PREFIX_IMAGE = "image";
     private final static String MIME_TYPE_PREFIX_VIDEO = "video";

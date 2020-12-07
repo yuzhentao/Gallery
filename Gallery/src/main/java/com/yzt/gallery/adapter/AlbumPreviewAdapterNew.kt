@@ -8,7 +8,7 @@ import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.yzt.gallery.R
-import com.yzt.gallery.repository.LocalMedia
+import com.yzt.gallery.bean.LocalMedia
 import com.yzt.gallery.view.photoview.PhotoView
 
 /**

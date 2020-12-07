@@ -1,4 +1,4 @@
-package com.yzt.gallery.repository;
+package com.yzt.gallery.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,62 +6,18 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author：luck
- * @date：2016-12-31 15:21
- * @describe：MediaFolder Entity
- */
 public class LocalMediaFolder implements Parcelable {
 
-    /**
-     * bucketId
-     */
     private long bucketId = -1;
-    /**
-     * Folder name
-     */
     private String name;
-    /**
-     * Folder first path
-     */
     private String firstImagePath;
-    /**
-     * Folder media num
-     */
     private int imageNum;
-    /**
-     * If the selected num
-     */
     private int checkedNum;
-    /**
-     * If the selected
-     */
-    private boolean isChecked;
-
-    /**
-     * type
-     */
+    private boolean isSelected;
     private int ofAllType = -1;
-    /**
-     * Whether or not the camera
-     */
     private boolean isCameraFolder;
-
-    /**
-     * data
-     */
     private List<LocalMedia> data = new ArrayList<>();
-
-    /**
-     * # Internal use
-     * setCurrentDataPage
-     */
     private int currentDataPage;
-
-    /**
-     * # Internal use
-     * is load more
-     */
     private boolean isHasMore;
 
     public long getBucketId() {
@@ -104,12 +60,12 @@ public class LocalMediaFolder implements Parcelable {
         this.checkedNum = checkedNum;
     }
 
-    public boolean isChecked() {
-        return isChecked;
+    public boolean isSelected() {
+        return isSelected;
     }
 
-    public void setChecked(boolean checked) {
-        isChecked = checked;
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     public int getOfAllType() {
@@ -152,48 +108,48 @@ public class LocalMediaFolder implements Parcelable {
         isHasMore = hasMore;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.bucketId);
-        dest.writeString(this.name);
-        dest.writeString(this.firstImagePath);
-        dest.writeInt(this.imageNum);
-        dest.writeInt(this.checkedNum);
-        dest.writeByte(this.isChecked ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.ofAllType);
-        dest.writeByte(this.isCameraFolder ? (byte) 1 : (byte) 0);
-        dest.writeTypedList(this.data);
-        dest.writeInt(this.currentDataPage);
-        dest.writeByte(this.isHasMore ? (byte) 1 : (byte) 0);
-    }
-
     public LocalMediaFolder() {
 
     }
 
     protected LocalMediaFolder(Parcel in) {
-        this.bucketId = in.readLong();
-        this.name = in.readString();
-        this.firstImagePath = in.readString();
-        this.imageNum = in.readInt();
-        this.checkedNum = in.readInt();
-        this.isChecked = in.readByte() != 0;
-        this.ofAllType = in.readInt();
-        this.isCameraFolder = in.readByte() != 0;
-        this.data = in.createTypedArrayList(LocalMedia.CREATOR);
-        this.currentDataPage = in.readInt();
-        this.isHasMore = in.readByte() != 0;
+        bucketId = in.readLong();
+        name = in.readString();
+        firstImagePath = in.readString();
+        imageNum = in.readInt();
+        checkedNum = in.readInt();
+        isSelected = in.readByte() != 0;
+        ofAllType = in.readInt();
+        isCameraFolder = in.readByte() != 0;
+        data = in.createTypedArrayList(LocalMedia.CREATOR);
+        currentDataPage = in.readInt();
+        isHasMore = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(bucketId);
+        dest.writeString(name);
+        dest.writeString(firstImagePath);
+        dest.writeInt(imageNum);
+        dest.writeInt(checkedNum);
+        dest.writeByte((byte) (isSelected ? 1 : 0));
+        dest.writeInt(ofAllType);
+        dest.writeByte((byte) (isCameraFolder ? 1 : 0));
+        dest.writeTypedList(data);
+        dest.writeInt(currentDataPage);
+        dest.writeByte((byte) (isHasMore ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<LocalMediaFolder> CREATOR = new Creator<LocalMediaFolder>() {
         @Override
-        public LocalMediaFolder createFromParcel(Parcel source) {
-            return new LocalMediaFolder(source);
+        public LocalMediaFolder createFromParcel(Parcel in) {
+            return new LocalMediaFolder(in);
         }
 
         @Override

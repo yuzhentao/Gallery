@@ -2,8 +2,7 @@ package com.yzt.gallery.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.yzt.gallery.bean.AlbumFile
-import com.yzt.gallery.repository.LocalMedia
+import com.yzt.gallery.bean.LocalMedia
 
 /**
  * 相册ViewModelFactory

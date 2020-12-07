@@ -11,8 +11,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.module.LoadMoreModule
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.yzt.gallery.R
+import com.yzt.gallery.bean.LocalMedia
 import com.yzt.gallery.key.AlbumFileType
-import com.yzt.gallery.repository.LocalMedia
 
 /**
  * 相册文件
@@ -29,8 +29,6 @@ class AlbumFileAdapterNew(data: MutableList<LocalMedia>?, activity: Activity?) :
     }
 
     override fun convert(holder: BaseViewHolder, item: LocalMedia) {
-        val itemView = holder.itemView
-        val position = holder.layoutPosition
         val iv = holder.getView<AppCompatImageView>(R.id.iv)
         val ivSelected = holder.getView<AppCompatImageView>(R.id.iv_selected)
         val tvSelected = holder.getView<AppCompatTextView>(R.id.tv_selected)

@@ -7,8 +7,8 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.yzt.gallery.Album
 import com.yzt.gallery.repository.AlbumRepositoryNew
-import com.yzt.gallery.repository.LocalMedia
-import com.yzt.gallery.repository.LocalMediaFolder
+import com.yzt.gallery.bean.LocalMedia
+import com.yzt.gallery.bean.LocalMediaFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import io.reactivex.Observable
 

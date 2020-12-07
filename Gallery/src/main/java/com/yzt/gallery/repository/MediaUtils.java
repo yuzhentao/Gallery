@@ -17,6 +17,8 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.exifinterface.media.ExifInterface;
 
+import com.yzt.gallery.bean.LocalMedia;
+
 import java.io.InputStream;
 import java.util.Objects;
 

@@ -9,7 +9,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.yzt.gallery.R
-import com.yzt.gallery.repository.LocalMediaFolder
+import com.yzt.gallery.bean.LocalMediaFolder
 
 /**
  * 相册文件夹
@@ -26,13 +26,11 @@ class AlbumFolderAdapterNew(data: MutableList<LocalMediaFolder>?, activity: Acti
     }
 
     override fun convert(holder: BaseViewHolder, item: LocalMediaFolder) {
-        val itemView = holder.itemView
-        val position = holder.layoutPosition
         val vSelected = holder.getView<View>(R.id.v_selected)
         val iv = holder.getView<AppCompatImageView>(R.id.iv)
         val tvName = holder.getView<AppCompatTextView>(R.id.tv_name)
         val tvCount = holder.getView<AppCompatTextView>(R.id.tv_count)
-        vSelected.visibility = if (item.isChecked) View.VISIBLE else View.GONE
+        vSelected.visibility = if (item.isSelected) View.VISIBLE else View.GONE
         item.firstImagePath?.let {
             activity?.let { activity ->
                 if (!activity.isFinishing) {

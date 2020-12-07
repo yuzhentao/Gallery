@@ -32,12 +32,12 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
 import com.yzt.gallery.adapter.AlbumFileAdapterNew
+import com.yzt.gallery.bean.LocalMedia
 import com.yzt.gallery.fragment.AlbumFolderFragment
 import com.yzt.gallery.key.AlbumConstants
 import com.yzt.gallery.key.AlbumFileType
 import com.yzt.gallery.key.AlbumKeys
 import com.yzt.gallery.listener.AlbumDoubleClickListener
-import com.yzt.gallery.repository.LocalMedia
 import com.yzt.gallery.util.*
 import com.yzt.gallery.view.AlbumLoadMoreView
 import com.yzt.gallery.viewModel.AlbumViewModel

@@ -17,7 +17,7 @@ import com.gyf.immersionbar.ImmersionBar
 import com.yzt.gallery.R
 import com.yzt.gallery.activity.AlbumActivity
 import com.yzt.gallery.adapter.AlbumFolderAdapterNew
-import com.yzt.gallery.repository.LocalMediaFolder
+import com.yzt.gallery.bean.LocalMediaFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import com.yzt.gallery.util.*
 import com.yzt.gallery.viewModel.AlbumViewModel
@@ -82,14 +82,14 @@ class AlbumFolderFragment : Fragment() {
 
             val bean = adapter.data[position] as LocalMediaFolder?
             bean?.let {
-                it.isChecked = true
+                it.isSelected = true
                 adapter.notifyItemChanged(position)
                 if (lastPosition == -1) {
                     lastPosition = 0
                 }
                 val lastBean = adapter.data[lastPosition] as LocalMediaFolder?
                 lastBean?.let { itt ->
-                    itt.isChecked = false
+                    itt.isSelected = false
                     adapter.notifyItemChanged(lastPosition)
                 }
                 viewModel!!.setCurrentFolderNew(it)
