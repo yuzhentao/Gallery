@@ -134,7 +134,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
                     if (imageDegree > 0) {
                         bitmap = AlbumBitmapUtil.rotateBitmap(bitmap, imageDegree.toFloat(), false)
                     }
-                    val file = File(filePath)
+                    val file = File(filePath!!)
                     val fos = FileOutputStream(file)
                     bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                     context.sendBroadcast(

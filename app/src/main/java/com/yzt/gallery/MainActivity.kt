@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
                 it.getStringExtra("intent_path").let { path ->
                     when (requestCode) {
                         1000 -> {
-                            AlbumLogUtil.e(">>>>>$path")
                             Glide
                                 .with(this)
                                 .load(path)
