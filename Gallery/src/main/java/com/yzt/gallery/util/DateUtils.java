@@ -1,4 +1,4 @@
-package com.yzt.gallery.repository;
+package com.yzt.gallery.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

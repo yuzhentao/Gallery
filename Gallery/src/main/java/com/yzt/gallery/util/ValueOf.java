@@ -1,10 +1,5 @@
-package com.yzt.gallery.repository;
+package com.yzt.gallery.util;
 
-/**
- * @author：luck
- * @date：2019-11-12 14:27
- * @describe：类型转换工具类
- */
 public class ValueOf {
 
     public static String toString(Object o) {
@@ -34,6 +29,10 @@ public class ValueOf {
         return value;
     }
 
+    public static long toLong(Object o) {
+        return toLong(o, 0);
+    }
+
     public static long toLong(Object o, long defaultValue) {
         if (o == null) {
             return defaultValue;
@@ -52,8 +51,8 @@ public class ValueOf {
         return value;
     }
 
-    public static long toLong(Object o) {
-        return toLong(o, 0);
+    public static float toFloat(Object o) {
+        return toFloat(o, 0);
     }
 
     public static float toFloat(Object o, long defaultValue) {
@@ -70,8 +69,8 @@ public class ValueOf {
         return value;
     }
 
-    public static float toFloat(Object o) {
-        return toFloat(o, 0);
+    public static int toInt(Object o) {
+        return toInt(o, 0);
     }
 
     public static int toInt(Object o, int defaultValue) {
@@ -90,10 +89,6 @@ public class ValueOf {
             value = defaultValue;
         }
         return value;
-    }
-
-    public static int toInt(Object o) {
-        return toInt(o, 0);
     }
 
     public static boolean toBoolean(Object o) {

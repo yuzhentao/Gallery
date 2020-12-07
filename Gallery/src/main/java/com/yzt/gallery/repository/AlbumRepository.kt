@@ -10,7 +10,7 @@ import com.yzt.gallery.R
 import com.yzt.gallery.bean.AlbumFile
 import com.yzt.gallery.bean.AlbumFolder
 import com.yzt.gallery.key.AlbumFileType
-import com.yzt.gallery.util.AlbumLogUtil
+import com.yzt.gallery.util.*
 import io.reactivex.Observable
 import java.util.*
 
@@ -19,17 +19,17 @@ import java.util.*
  *
  * @author yzt 2020/12/3
  */
-class AlbumRepositoryNew {
+class AlbumRepository {
 
     companion object {
         @JvmStatic
-        fun get(): AlbumRepositoryNew {
+        fun get(): AlbumRepository {
             return AlbumRepositoryNewHolder.holder
         }
     }
 
     private object AlbumRepositoryNewHolder {
-        val holder = AlbumRepositoryNew()
+        val holder = AlbumRepository()
     }
 
     private val notGifUnknown = "!='image/*'"
@@ -164,7 +164,7 @@ class AlbumRepositoryNew {
                         sortFolders(folders)
 
                         val bucketDisplayName: String =
-                            Album.get()!!.getContext()!!.getString(R.string.picture_camera_roll)
+                            Album.get()!!.getContext()!!.getString(R.string.all)
                         val allFolder =
                             AlbumFolder()//所有照片
                         allFolder.bucketId = -1
@@ -273,7 +273,7 @@ class AlbumRepositoryNew {
                                 if (SdkVersionUtils.checkedAndroid_Q()) getRealPathAndroidQ(
                                     id
                                 ) else absolutePath
-                            if (!PictureFileUtils.isFileExists(absolutePath)) {//过滤无效文件
+                            if (!AlbumFileUtil.isFileExist(absolutePath)) {//过滤无效文件
                                 continue
                             }
 
@@ -290,12 +290,12 @@ class AlbumRepositoryNew {
                                     continue
                                 }
                             }
-                            if (mimeType.startsWith(PictureMimeType.ofWEBP())) {//过滤WEBP
-                                continue
-                            }
-                            if (mimeType.startsWith(PictureMimeType.ofBMP())) {//过滤BMP
-                                continue
-                            }
+//                            if (mimeType.startsWith(PictureMimeType.ofWEBP())) {//过滤WEBP
+//                                continue
+//                            }
+//                            if (mimeType.startsWith(PictureMimeType.ofBMP())) {//过滤BMP
+//                                continue
+//                            }
                             val width = cursor.getInt(widthColumn)
                             val height = cursor.getInt(heightColumn)
                             val duration = cursor.getLong(durationColumn)

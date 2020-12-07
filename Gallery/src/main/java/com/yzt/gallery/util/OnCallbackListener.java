@@ -1,4 +1,4 @@
-package com.yzt.gallery.repository;
+package com.yzt.gallery.util;
 
 /**
  * @author：luck

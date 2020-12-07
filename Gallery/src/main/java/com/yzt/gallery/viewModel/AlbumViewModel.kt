@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.yzt.gallery.Album
-import com.yzt.gallery.repository.AlbumRepositoryNew
 import com.yzt.gallery.bean.AlbumFile
 import com.yzt.gallery.bean.AlbumFolder
+import com.yzt.gallery.repository.AlbumRepository
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import io.reactivex.Observable
 
@@ -57,10 +57,10 @@ class AlbumViewModel(
                 val observableList: MutableList<Observable<MutableList<AlbumFile>>> =
                     mutableListOf()
                 if (hasSystemCamera) {
-                    observableList.add(AlbumRepositoryNew.get().getSystemCamera())
+                    observableList.add(AlbumRepository.get().getSystemCamera())
                 }
                 if (hasSystemAlbum) {
-                    observableList.add(AlbumRepositoryNew.get().getSystemAlbum())
+                    observableList.add(AlbumRepository.get().getSystemAlbum())
                 }
                 filesNew?.let { itt ->
                     if (itt.size > 0) {
@@ -68,7 +68,7 @@ class AlbumViewModel(
                     }
                 }
                 observableList.add(
-                    AlbumRepositoryNew.get()
+                    AlbumRepository.get()
                         .getFiles(hasSystemCamera, hasSystemAlbum, -1L, page, pageSize)
                 )
                 observable = Observable.zip(observableList) { objects ->
@@ -79,7 +79,7 @@ class AlbumViewModel(
                     galleryImages
                 }
             } else {
-                observable = AlbumRepositoryNew().getFiles(
+                observable = AlbumRepository().getFiles(
                     hasSystemCamera,
                     hasSystemAlbum,
                     folderNameLiveDataNew!!.value!!,
@@ -97,7 +97,7 @@ class AlbumViewModel(
     }
 
     fun getFoldersNew(): Observable<MutableList<AlbumFolder>> {
-        return AlbumRepositoryNew.get().getFolders()
+        return AlbumRepository.get().getFolders()
     }
 
     fun setCurrentFolderNew(currentFolder: AlbumFolder?) {
