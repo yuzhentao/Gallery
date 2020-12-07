@@ -9,6 +9,9 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -126,14 +129,12 @@ public class AlbumFileUtil {
                 if ("primary".equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + "/" + split[1];
                 }
-            }
-            else if (isDownloadsDocument(uri)) {
+            } else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.parseLong(id));
                 return getDataColumn(context, contentUri, null, null);
-            }
-            else if (isMediaDocument(uri)) {
+            } else if (isMediaDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -149,11 +150,9 @@ public class AlbumFileUtil {
                 final String[] selectionArgs = new String[]{split[1]};
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
-        }
-        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
             return getDataColumn(context, uri, null, null);
-        }
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
         return null;
@@ -187,6 +186,29 @@ public class AlbumFileUtil {
 
     private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    public static String getDCIMCameraPath() {
+        String absolutePath;
+        try {
+            absolutePath = "%" + Environment.getExternalStoragePublicDirectory
+                    (Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Camera";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+        return absolutePath;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static void close(@Nullable Closeable c) {
+        if (c instanceof Closeable) {
+            try {
+                c.close();
+            } catch (Exception ignored) {
+
+            }
+        }
     }
 
 }

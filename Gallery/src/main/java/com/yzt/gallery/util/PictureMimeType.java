@@ -7,11 +7,6 @@ import com.yzt.gallery.R;
 
 import java.io.File;
 
-/**
- * @author：luck
- * @date：2017-5-24 17:02
- * @describe：PictureMimeType
- */
 public final class PictureMimeType {
 
     public static int ofAll() {
@@ -87,9 +82,6 @@ public final class PictureMimeType {
 
     /**
      * isGif
-     *
-     * @param mimeType
-     * @return
      */
     public static boolean isGif(String mimeType) {
         return mimeType != null && (mimeType.equals("image/gif") || mimeType.equals("image/GIF"));
@@ -97,9 +89,6 @@ public final class PictureMimeType {
 
     /**
      * isVideo
-     *
-     * @param mimeType
-     * @return
      */
     public static boolean isHasVideo(String mimeType) {
         return mimeType != null && mimeType.startsWith(MIME_TYPE_PREFIX_VIDEO);
@@ -107,9 +96,6 @@ public final class PictureMimeType {
 
     /**
      * isVideo
-     *
-     * @param url
-     * @return
      */
     public static boolean isUrlHasVideo(String url) {
         return url.endsWith(".mp4");
@@ -117,9 +103,6 @@ public final class PictureMimeType {
 
     /**
      * isAudio
-     *
-     * @param mimeType
-     * @return
      */
     public static boolean isHasAudio(String mimeType) {
         return mimeType != null && mimeType.startsWith(MIME_TYPE_PREFIX_AUDIO);
@@ -127,9 +110,6 @@ public final class PictureMimeType {
 
     /**
      * isImage
-     *
-     * @param mimeType
-     * @return
      */
     public static boolean isHasImage(String mimeType) {
         return mimeType != null && mimeType.startsWith(MIME_TYPE_PREFIX_IMAGE);
@@ -137,8 +117,6 @@ public final class PictureMimeType {
 
     /**
      * Determine if it is JPG.
-     *
-     * @param is image file mimeType
      */
     public static boolean isJPEG(String mimeType) {
         if (TextUtils.isEmpty(mimeType)) {
@@ -149,8 +127,6 @@ public final class PictureMimeType {
 
     /**
      * Determine if it is JPG.
-     *
-     * @param is image file mimeType
      */
     public static boolean isJPG(String mimeType) {
         if (TextUtils.isEmpty(mimeType)) {
@@ -161,9 +137,6 @@ public final class PictureMimeType {
 
     /**
      * is Network image
-     *
-     * @param path
-     * @return
      */
     public static boolean isHasHttp(String path) {
         if (TextUtils.isEmpty(path)) {
@@ -177,9 +150,6 @@ public final class PictureMimeType {
 
     /**
      * Determine whether the file type is an image or a video
-     *
-     * @param cameraMimeType
-     * @return
      */
     public static String getMimeType(int cameraMimeType) {
         switch (cameraMimeType) {
@@ -194,9 +164,6 @@ public final class PictureMimeType {
 
     /**
      * Determines if the file name is a picture
-     *
-     * @param name
-     * @return
      */
     public static boolean isSuffixOfImage(String name) {
         return !TextUtils.isEmpty(name) && name.endsWith(".PNG") || name.endsWith(".png") || name.endsWith(".jpeg")
@@ -207,10 +174,6 @@ public final class PictureMimeType {
 
     /**
      * Is it the same type
-     *
-     * @param oldMimeType
-     * @param newMimeType
-     * @return
      */
     public static boolean isMimeTypeSame(String oldMimeType, String newMimeType) {
 
@@ -219,9 +182,6 @@ public final class PictureMimeType {
 
     /**
      * Get Image mimeType
-     *
-     * @param path
-     * @return
      */
     public static String getImageMimeType(String path) {
         try {
@@ -241,8 +201,6 @@ public final class PictureMimeType {
 
     /**
      * Picture or video
-     *
-     * @return
      */
     public static int getMimeType(String mimeType) {
         if (TextUtils.isEmpty(mimeType)) {
@@ -259,9 +217,6 @@ public final class PictureMimeType {
 
     /**
      * Get image suffix
-     *
-     * @param mineType
-     * @return
      */
     public static String getLastImgSuffix(String mineType) {
         String defaultSuffix = PNG;
@@ -279,9 +234,6 @@ public final class PictureMimeType {
 
     /**
      * is content://
-     *
-     * @param url
-     * @return
      */
     public static boolean isContent(String url) {
         if (TextUtils.isEmpty(url)) {
@@ -292,10 +244,6 @@ public final class PictureMimeType {
 
     /**
      * Returns an error message by type
-     *
-     * @param context
-     * @param mimeType
-     * @return
      */
     public static String s(Context context, String mimeType) {
         Context ctx = context.getApplicationContext();

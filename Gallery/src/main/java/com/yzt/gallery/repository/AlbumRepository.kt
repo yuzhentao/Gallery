@@ -1,5 +1,6 @@
 package com.yzt.gallery.repository
 
+import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
@@ -94,7 +95,7 @@ class AlbumRepository {
                     val count = cursor.count
                     var totalCount = 0
                     if (count > 0) {
-                        if (SdkVersionUtils.checkedAndroid_Q()) {//API>=29
+                        if (AlbumSdkVersionUtil.checkedAndroid_Q()) {//API>=29
                             val countMap: MutableMap<Long, Long> = mutableMapOf()
                             while (cursor.moveToNext()) {
                                 val bucketId =
@@ -170,7 +171,7 @@ class AlbumRepository {
                         allFolder.bucketId = -1
                         if (cursor.moveToFirst()) {
                             val firstUrl: String =
-                                if (SdkVersionUtils.checkedAndroid_Q()) getFirstUri(
+                                if (AlbumSdkVersionUtil.checkedAndroid_Q()) getFirstUri(
                                     cursor
                                 ) else getFirstUrl(cursor)
                             allFolder.firstImagePath = firstUrl
@@ -209,8 +210,8 @@ class AlbumRepository {
             var cursor: Cursor? = null
 
             try {
-                cursor = if (SdkVersionUtils.checkedAndroid_R()) {//API>=30
-                    val queryArgsFile: Bundle = MediaUtils.createQueryArgsBundle(
+                cursor = if (AlbumSdkVersionUtil.checkedAndroid_R()) {//API>=30
+                    val queryArgsFile: Bundle = createQueryArgsBundle(
                         getSelectionFile(bucketId),
                         getSelectionArgsFile(bucketId),
                         pageSize,
@@ -270,7 +271,7 @@ class AlbumRepository {
                             val id = cursor.getLong(idColumn)
                             val absolutePath = cursor.getString(dataColumn)
                             val url =
-                                if (SdkVersionUtils.checkedAndroid_Q()) getRealPathAndroidQ(
+                                if (AlbumSdkVersionUtil.checkedAndroid_Q()) getRealPathAndroidQ(
                                     id
                                 ) else absolutePath
                             if (!AlbumFileUtil.isFileExist(absolutePath)) {//过滤无效文件
@@ -371,13 +372,13 @@ class AlbumRepository {
      * 由需要查询的列名组成的数组，如果为null则表示查询全部列
      */
     private fun getProjection() =
-        if (SdkVersionUtils.checkedAndroid_Q()) projection29 else projection
+        if (AlbumSdkVersionUtil.checkedAndroid_Q()) projection29 else projection
 
     /**
      * 类似SQL中的where子句，用于增加条件来完成数据过滤
      */
     private fun getSelection(): String {
-        return if (SdkVersionUtils.checkedAndroid_Q()) selection29 else selection
+        return if (AlbumSdkVersionUtil.checkedAndroid_Q()) selection29 else selection
     }
 
     /**
@@ -442,6 +443,30 @@ class AlbumRepository {
     private fun getFirstUri(cursor: Cursor): String {
         val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID))
         return getRealPathAndroidQ(id)
+    }
+
+    private fun createQueryArgsBundle(
+        selection: String,
+        selectionArgs: Array<String>,
+        limitCount: Int,
+        offset: Int
+    ): Bundle {
+        val queryArgs = Bundle()
+        if (AlbumSdkVersionUtil.checkedAndroid_Q()) {
+            queryArgs.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selection)
+            queryArgs.putStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS, selectionArgs)
+            queryArgs.putString(
+                ContentResolver.QUERY_ARG_SQL_SORT_ORDER,
+                MediaStore.Files.FileColumns._ID + " DESC"
+            )
+            if (AlbumSdkVersionUtil.checkedAndroid_R()) {
+                queryArgs.putString(
+                    ContentResolver.QUERY_ARG_SQL_LIMIT,
+                    "$limitCount offset $offset"
+                )
+            }
+        }
+        return queryArgs
     }
 
 }

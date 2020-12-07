@@ -24,12 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * @author：luck
- * @date：2020/10/30 10:56 AM
- * @describe：ThreadPool
- */
-public final class PictureThreadUtils {
+public final class PictureThreadUtil {
 
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
