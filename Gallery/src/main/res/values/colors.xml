@@ -22,6 +22,7 @@
     <color name="album_black_60">#99000000</color>
     <color name="album_black_50">#80000000</color>
     <color name="album_black_40">#66000000</color>
+    <color name="album_black_10">#1A000000</color>
     <color name="album_black_05">#0D000000</color>
     <color name="album_green_50">#804D9F7C</color>
     <color name="album_color_top">#0F444444</color>
