@@ -16,8 +16,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.gyf.immersionbar.ImmersionBar
 import com.yzt.gallery.R
 import com.yzt.gallery.activity.AlbumActivity
-import com.yzt.gallery.adapter.AlbumFolderAdapterNew
-import com.yzt.gallery.bean.LocalMediaFolder
+import com.yzt.gallery.adapter.AlbumFolderAdapter
+import com.yzt.gallery.bean.AlbumFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import com.yzt.gallery.util.*
 import com.yzt.gallery.viewModel.AlbumViewModel
@@ -39,7 +39,7 @@ class AlbumFolderFragment : Fragment() {
     private val layoutManager by lazy {
         AlbumLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
-    private var adapter: AlbumFolderAdapterNew? = null
+    private var adapter: AlbumFolderAdapter? = null
 
     private var onClickListener: View.OnClickListener? = null
 
@@ -66,7 +66,7 @@ class AlbumFolderFragment : Fragment() {
         val itemDecoration = AlbumLinearItemDecoration(AlbumDimenUtil.dp2px(context,2), false)
         rv!!.addItemDecoration(itemDecoration)
         (rv!!.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        adapter = AlbumFolderAdapterNew(null, activity)
+        adapter = AlbumFolderAdapter(null, activity)
         rv!!.adapter = adapter
         adapter!!.setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
         adapter!!.setOnItemClickListener { adapter, _, position ->
@@ -80,14 +80,14 @@ class AlbumFolderFragment : Fragment() {
                 return@setOnItemClickListener
             }
 
-            val bean = adapter.data[position] as LocalMediaFolder?
+            val bean = adapter.data[position] as AlbumFolder?
             bean?.let {
                 it.isSelected = true
                 adapter.notifyItemChanged(position)
                 if (lastPosition == -1) {
                     lastPosition = 0
                 }
-                val lastBean = adapter.data[lastPosition] as LocalMediaFolder?
+                val lastBean = adapter.data[lastPosition] as AlbumFolder?
                 lastBean?.let { itt ->
                     itt.isSelected = false
                     adapter.notifyItemChanged(lastPosition)

@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-public class LocalMedia implements Parcelable {
+public class AlbumFile implements Parcelable {
 
     private int itemType;
     private boolean isSelected;
@@ -188,12 +188,12 @@ public class LocalMedia implements Parcelable {
         this.bucketId = bucketId;
     }
 
-    public LocalMedia() {
+    public AlbumFile() {
 
     }
 
-    public LocalMedia(long id, String path, String absolutePath, String fileName, String parentFolderName, long duration, int chooseModel,
-                      String mimeType, int width, int height, long size, long bucketId) {
+    public AlbumFile(long id, String path, String absolutePath, String fileName, String parentFolderName, long duration, int chooseModel,
+                     String mimeType, int width, int height, long size, long bucketId) {
         this.id = id;
         this.path = path;
         this.realPath = absolutePath;
@@ -208,7 +208,7 @@ public class LocalMedia implements Parcelable {
         this.bucketId = bucketId;
     }
 
-    protected LocalMedia(Parcel in) {
+    protected AlbumFile(Parcel in) {
         itemType = in.readInt();
         isSelected = in.readByte() != 0;
         selectedNo = in.readInt();
@@ -260,15 +260,15 @@ public class LocalMedia implements Parcelable {
         return 0;
     }
 
-    public static final Creator<LocalMedia> CREATOR = new Creator<LocalMedia>() {
+    public static final Creator<AlbumFile> CREATOR = new Creator<AlbumFile>() {
         @Override
-        public LocalMedia createFromParcel(Parcel in) {
-            return new LocalMedia(in);
+        public AlbumFile createFromParcel(Parcel in) {
+            return new AlbumFile(in);
         }
 
         @Override
-        public LocalMedia[] newArray(int size) {
-            return new LocalMedia[size];
+        public AlbumFile[] newArray(int size) {
+            return new AlbumFile[size];
         }
     };
 

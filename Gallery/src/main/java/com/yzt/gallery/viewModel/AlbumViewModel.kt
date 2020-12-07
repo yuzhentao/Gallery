@@ -7,8 +7,8 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.yzt.gallery.Album
 import com.yzt.gallery.repository.AlbumRepositoryNew
-import com.yzt.gallery.bean.LocalMedia
-import com.yzt.gallery.bean.LocalMediaFolder
+import com.yzt.gallery.bean.AlbumFile
+import com.yzt.gallery.bean.AlbumFolder
 import com.yzt.gallery.rx.AlbumRxSchedulers
 import io.reactivex.Observable
 
@@ -20,7 +20,7 @@ import io.reactivex.Observable
 class AlbumViewModel(
     hasSystemCamera: Boolean,
     hasSystemAlbum: Boolean,
-    files: MutableList<LocalMedia>?
+    files: MutableList<AlbumFile>?
 ) : ViewModel() {
 
     private var page = 0
@@ -29,19 +29,19 @@ class AlbumViewModel(
     private var hasSystemCamera: Boolean = false
     private var hasSystemAlbum: Boolean = false
 
-    private var filesNew: MutableList<LocalMedia>? = null
+    private var filesNew: MutableList<AlbumFile>? = null
     var folderNameLiveDataNew: LiveData<Long>? = null
-    var currentFolderLiveDataNew: MutableLiveData<LocalMediaFolder> =
-        MutableLiveData<LocalMediaFolder>()
-    var filesLiveDataNew: MutableLiveData<MutableList<LocalMedia>> =
-        MutableLiveData<MutableList<LocalMedia>>()
+    var currentFolderLiveDataNew: MutableLiveData<AlbumFolder> =
+        MutableLiveData<AlbumFolder>()
+    var filesLiveDataNew: MutableLiveData<MutableList<AlbumFile>> =
+        MutableLiveData<MutableList<AlbumFile>>()
 
     init {
         this.hasSystemCamera = hasSystemCamera
         this.hasSystemAlbum = hasSystemAlbum
         this.filesNew = files
         folderNameLiveDataNew =
-            Transformations.switchMap(currentFolderLiveDataNew) { input: LocalMediaFolder ->
+            Transformations.switchMap(currentFolderLiveDataNew) { input: AlbumFolder ->
                 val liveData = MutableLiveData<Long>()
                 liveData.value = input.bucketId
                 liveData
@@ -52,9 +52,9 @@ class AlbumViewModel(
     @Suppress("UNCHECKED_CAST")
     fun getFilesNew() {
         Album.get()?.let {
-            val observable: Observable<MutableList<LocalMedia>>
+            val observable: Observable<MutableList<AlbumFile>>
             if (page == 0 && folderNameLiveDataNew!!.value == -1L) {
-                val observableList: MutableList<Observable<MutableList<LocalMedia>>> =
+                val observableList: MutableList<Observable<MutableList<AlbumFile>>> =
                     mutableListOf()
                 if (hasSystemCamera) {
                     observableList.add(AlbumRepositoryNew.get().getSystemCamera())
@@ -72,9 +72,9 @@ class AlbumViewModel(
                         .getFiles(hasSystemCamera, hasSystemAlbum, -1L, page, pageSize)
                 )
                 observable = Observable.zip(observableList) { objects ->
-                    val galleryImages: MutableList<LocalMedia> = ArrayList()
+                    val galleryImages: MutableList<AlbumFile> = ArrayList()
                     for (o in objects) {
-                        galleryImages.addAll(o as MutableList<LocalMedia>)
+                        galleryImages.addAll(o as MutableList<AlbumFile>)
                     }
                     galleryImages
                 }
@@ -89,18 +89,18 @@ class AlbumViewModel(
             }
             observable
                 .compose(AlbumRxSchedulers.normalSchedulers())
-                .subscribe { files: MutableList<LocalMedia> ->
+                .subscribe { files: MutableList<AlbumFile> ->
                     page++
                     filesLiveDataNew.setValue(files)
                 }
         }
     }
 
-    fun getFoldersNew(): Observable<MutableList<LocalMediaFolder>> {
+    fun getFoldersNew(): Observable<MutableList<AlbumFolder>> {
         return AlbumRepositoryNew.get().getFolders()
     }
 
-    fun setCurrentFolderNew(currentFolder: LocalMediaFolder?) {
+    fun setCurrentFolderNew(currentFolder: AlbumFolder?) {
         page = 0
         this.currentFolderLiveDataNew.value = currentFolder
     }

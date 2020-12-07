@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalMediaFolder implements Parcelable {
+public class AlbumFolder implements Parcelable {
 
     private long bucketId = -1;
     private String name;
@@ -16,7 +16,7 @@ public class LocalMediaFolder implements Parcelable {
     private boolean isSelected;
     private int ofAllType = -1;
     private boolean isCameraFolder;
-    private List<LocalMedia> data = new ArrayList<>();
+    private List<AlbumFile> data = new ArrayList<>();
     private int currentDataPage;
     private boolean isHasMore;
 
@@ -84,11 +84,11 @@ public class LocalMediaFolder implements Parcelable {
         isCameraFolder = cameraFolder;
     }
 
-    public List<LocalMedia> getData() {
+    public List<AlbumFile> getData() {
         return data;
     }
 
-    public void setData(List<LocalMedia> data) {
+    public void setData(List<AlbumFile> data) {
         this.data = data;
     }
 
@@ -108,11 +108,11 @@ public class LocalMediaFolder implements Parcelable {
         isHasMore = hasMore;
     }
 
-    public LocalMediaFolder() {
+    public AlbumFolder() {
 
     }
 
-    protected LocalMediaFolder(Parcel in) {
+    protected AlbumFolder(Parcel in) {
         bucketId = in.readLong();
         name = in.readString();
         firstImagePath = in.readString();
@@ -121,7 +121,7 @@ public class LocalMediaFolder implements Parcelable {
         isSelected = in.readByte() != 0;
         ofAllType = in.readInt();
         isCameraFolder = in.readByte() != 0;
-        data = in.createTypedArrayList(LocalMedia.CREATOR);
+        data = in.createTypedArrayList(AlbumFile.CREATOR);
         currentDataPage = in.readInt();
         isHasMore = in.readByte() != 0;
     }
@@ -146,15 +146,15 @@ public class LocalMediaFolder implements Parcelable {
         return 0;
     }
 
-    public static final Creator<LocalMediaFolder> CREATOR = new Creator<LocalMediaFolder>() {
+    public static final Creator<AlbumFolder> CREATOR = new Creator<AlbumFolder>() {
         @Override
-        public LocalMediaFolder createFromParcel(Parcel in) {
-            return new LocalMediaFolder(in);
+        public AlbumFolder createFromParcel(Parcel in) {
+            return new AlbumFolder(in);
         }
 
         @Override
-        public LocalMediaFolder[] newArray(int size) {
-            return new LocalMediaFolder[size];
+        public AlbumFolder[] newArray(int size) {
+            return new AlbumFolder[size];
         }
     };
 

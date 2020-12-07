@@ -16,7 +16,8 @@ import com.yzt.gallery.bean.AlbumFolder
  *
  * @author yzt 2020/4/22
  */
-class AlbumFolderAdapter(data: MutableList<AlbumFolder>?, activity: Activity?) : BaseQuickAdapter<AlbumFolder, BaseViewHolder>(R.layout.item_album_folder, data) {
+class AlbumFolderAdapter(data: MutableList<AlbumFolder>?, activity: Activity?) :
+    BaseQuickAdapter<AlbumFolder, BaseViewHolder>(R.layout.item_album_folder, data) {
 
     private var activity: Activity? = null
 
@@ -25,26 +26,24 @@ class AlbumFolderAdapter(data: MutableList<AlbumFolder>?, activity: Activity?) :
     }
 
     override fun convert(holder: BaseViewHolder, item: AlbumFolder) {
-        val itemView = holder.itemView
-        val position = holder.layoutPosition
         val vSelected = holder.getView<View>(R.id.v_selected)
         val iv = holder.getView<AppCompatImageView>(R.id.iv)
         val tvName = holder.getView<AppCompatTextView>(R.id.tv_name)
         val tvCount = holder.getView<AppCompatTextView>(R.id.tv_count)
         vSelected.visibility = if (item.isSelected) View.VISIBLE else View.GONE
-        item.coverImage?.let {
+        item.firstImagePath?.let {
             activity?.let { activity ->
                 if (!activity.isFinishing) {
                     Glide
-                            .with(context)
-                            .load(it)
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .into(iv)
+                        .with(context)
+                        .load(it)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .into(iv)
                 }
             }
         }
         tvName.text = item.name
-        tvCount.text = context.getString(R.string.count, item.count)
+        tvCount.text = context.getString(R.string.count, item.imageNum)
     }
 
 }

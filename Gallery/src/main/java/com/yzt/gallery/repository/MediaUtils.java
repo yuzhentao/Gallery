@@ -17,7 +17,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.exifinterface.media.ExifInterface;
 
-import com.yzt.gallery.bean.LocalMedia;
+import com.yzt.gallery.bean.AlbumFile;
 
 import java.io.InputStream;
 import java.util.Objects;
@@ -138,7 +138,7 @@ public class MediaUtils {
      * @param media
      * @return true 是 or false 不是
      */
-    public static boolean isLongImg(LocalMedia media) {
+    public static boolean isLongImg(AlbumFile media) {
         if (null != media) {
             int width = media.getWidth();
             int height = media.getHeight();
@@ -250,7 +250,7 @@ public class MediaUtils {
      *
      * @return
      */
-    public static void getVideoSizeForUri(Context context, Uri uri, LocalMedia media) {
+    public static void getVideoSizeForUri(Context context, Uri uri, AlbumFile media) {
         PictureThreadUtils.executeByIo(new PictureThreadUtils.SimpleTask<Integer[]>() {
 
             @Override
@@ -517,10 +517,10 @@ public class MediaUtils {
      * @param listener
      * @return
      */
-    public static void setOrientationAsynchronous(Context context, LocalMedia media,
+    public static void setOrientationAsynchronous(Context context, AlbumFile media,
                                                   boolean isAndroidQChangeWH,
                                                   boolean isAndroidQChangeVideoWH,
-                                                  OnCallbackListener<LocalMedia> listener) {
+                                                  OnCallbackListener<AlbumFile> listener) {
         if (PictureMimeType.isHasImage(media.getMimeType())) {
             if (!isAndroidQChangeWH) {
                 return;
@@ -578,7 +578,7 @@ public class MediaUtils {
      * @param isAndroidQChangeWH
      * @return
      */
-    public static void setOrientationSynchronous(Context context, LocalMedia media,
+    public static void setOrientationSynchronous(Context context, AlbumFile media,
                                                  boolean isAndroidQChangeWH,
                                                  boolean isAndroidQChangeVideoWH) {
         if (PictureMimeType.isHasImage(media.getMimeType())) {

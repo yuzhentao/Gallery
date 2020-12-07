@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.yzt.gallery.R
@@ -15,7 +16,7 @@ import com.yzt.gallery.view.photoview.PhotoView
  *
  * @author yzt 2020/4/23
  */
-class AlbumPreviewAdapter(context: Context?, activity: Activity?, beans: MutableList<AlbumFile>?) : androidx.viewpager.widget.PagerAdapter() {
+class AlbumPreviewAdapter(context: Context?, activity: Activity?, beans: MutableList<AlbumFile>?) : PagerAdapter() {
 
     private var context: Context? = null
     private var activity: Activity? = null

@@ -7,8 +7,8 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
-import com.yzt.gallery.bean.LocalMedia
-import com.yzt.gallery.bean.LocalMediaFolder
+import com.yzt.gallery.bean.AlbumFile
+import com.yzt.gallery.bean.AlbumFolder
 import com.yzt.gallery.key.AlbumFileType
 import com.yzt.gallery.util.AlbumLogUtil
 import io.reactivex.Observable
@@ -78,9 +78,9 @@ class AlbumRepositoryNew {
     /**
      * 获取文件夹
      */
-    fun getFolders(): Observable<MutableList<LocalMediaFolder>> {
+    fun getFolders(): Observable<MutableList<AlbumFolder>> {
         return Observable.create { emitter ->
-            val folders: MutableList<LocalMediaFolder> = mutableListOf()
+            val folders: MutableList<AlbumFolder> = mutableListOf()
             val cursor: Cursor? = Album.get()!!.getContext()!!.contentResolver.query(
                 uri,
                 getProjection(),
@@ -126,7 +126,7 @@ class AlbumRepositoryNew {
                                         )
                                     val size = countMap[bucketId]!!
                                     val folder =
-                                        LocalMediaFolder()
+                                        AlbumFolder()
                                     folder.bucketId = bucketId
                                     folder.firstImagePath =
                                         getRealPathAndroidQ(
@@ -151,7 +151,7 @@ class AlbumRepositoryNew {
                                 val size =
                                     cursor.getInt(cursor.getColumnIndex(columnCount))
                                 val folder =
-                                    LocalMediaFolder()
+                                    AlbumFolder()
                                 folder.bucketId = bucketId
                                 folder.firstImagePath = url
                                 folder.name = bucketDisplayName
@@ -166,7 +166,7 @@ class AlbumRepositoryNew {
                         val bucketDisplayName: String =
                             Album.get()!!.getContext()!!.getString(R.string.picture_camera_roll)
                         val allFolder =
-                            LocalMediaFolder()//所有照片
+                            AlbumFolder()//所有照片
                         allFolder.bucketId = -1
                         if (cursor.moveToFirst()) {
                             val firstUrl: String =
@@ -203,9 +203,9 @@ class AlbumRepositoryNew {
         bucketId: Long,
         page: Int,
         pageSize: Int
-    ): Observable<MutableList<LocalMedia>> {
+    ): Observable<MutableList<AlbumFile>> {
         return Observable.create { emitter ->
-            val files: MutableList<LocalMedia> = mutableListOf()
+            val files: MutableList<AlbumFile> = mutableListOf()
             var cursor: Cursor? = null
 
             try {
@@ -303,7 +303,7 @@ class AlbumRepositoryNew {
                             val folderName = cursor.getString(folderNameColumn)
                             val fileName = cursor.getString(fileNameColumn)
                             val bucketId = cursor.getLong(bucketIdColumn)
-                            val image = LocalMedia(
+                            val image = AlbumFile(
                                 id,
                                 url,
                                 absolutePath,
@@ -345,23 +345,23 @@ class AlbumRepositoryNew {
         }
     }
 
-    fun getSystemCamera(): Observable<MutableList<LocalMedia>> {
+    fun getSystemCamera(): Observable<MutableList<AlbumFile>> {
         return Observable.create { emitter ->
-            val file = LocalMedia()
+            val file = AlbumFile()
             file.isCamera = true
             file.itemType = AlbumFileType.SYSTEM_CAMERA.ordinal
-            val files: MutableList<LocalMedia> = mutableListOf()
+            val files: MutableList<AlbumFile> = mutableListOf()
             files.add(file)
             emitter.onNext(files)
         }
     }
 
-    fun getSystemAlbum(): Observable<MutableList<LocalMedia>> {
+    fun getSystemAlbum(): Observable<MutableList<AlbumFile>> {
         return Observable.create { emitter ->
-            val file = LocalMedia()
+            val file = AlbumFile()
             file.isAlbum = true
             file.itemType = AlbumFileType.SYSTEM_ALBUM.ordinal
-            val files: MutableList<LocalMedia> = mutableListOf()
+            val files: MutableList<AlbumFile> = mutableListOf()
             files.add(file)
             emitter.onNext(files)
         }
@@ -392,7 +392,7 @@ class AlbumRepositoryNew {
     /**
      * 对文件夹进行排序
      */
-    private fun sortFolders(folders: MutableList<LocalMediaFolder>) {
+    private fun sortFolders(folders: MutableList<AlbumFolder>) {
         Collections.sort(folders, Comparator { lhs, rhs ->
             if (lhs.data == null || rhs.data == null) {
                 return@Comparator 0

@@ -31,8 +31,8 @@ import com.tbruyelle.rxpermissions2.Permission
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.yzt.gallery.Album
 import com.yzt.gallery.R
-import com.yzt.gallery.adapter.AlbumFileAdapterNew
-import com.yzt.gallery.bean.LocalMedia
+import com.yzt.gallery.adapter.AlbumFileAdapter
+import com.yzt.gallery.bean.AlbumFile
 import com.yzt.gallery.fragment.AlbumFolderFragment
 import com.yzt.gallery.key.AlbumConstants
 import com.yzt.gallery.key.AlbumFileType
@@ -78,7 +78,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         AlbumGridLayoutManager(this@AlbumActivity, 3)
     }
 
-    private var adapter: AlbumFileAdapterNew? = null
+    private var adapter: AlbumFileAdapter? = null
 
     private var rxPermissions: RxPermissions? = null
     private var permissionsDisposable: Disposable? = null
@@ -86,7 +86,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
     private var viewModelFactory: AlbumViewModelFactory? = null
     private var viewModel: AlbumViewModel? = null
 
-    private var selectedFiles: MutableList<LocalMedia>? = mutableListOf()
+    private var selectedFiles: MutableList<AlbumFile>? = mutableListOf()
 
     private val imageFolder = Environment.getExternalStorageDirectory().absolutePath + "/Gallery/"
     private var filePath: String? = null
@@ -104,7 +104,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
                 AlbumConstants.REQUEST_CODE_PREVIEW -> {
                     val intent = data ?: return
                     val bundle = intent.getBundleExtra(AlbumKeys.INTENT_BUNDLE) ?: return
-                    val backFiles: MutableList<LocalMedia> =
+                    val backFiles: MutableList<AlbumFile> =
                         bundle.getParcelableArrayList(AlbumKeys.BUNDLE_BEANS)
                             ?: return
                     for (i in selectedFiles!!.indices) {
@@ -294,7 +294,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
         val itemDecoration = AlbumGridItemDecoration(3, AlbumDimenUtil.dp2px(context, 2), false)
         rv.addItemDecoration(itemDecoration)
         (rv.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        adapter = AlbumFileAdapterNew(null, activity)
+        adapter = AlbumFileAdapter(null, activity)
         rv.adapter = adapter
         adapter!!.setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
         adapter!!.loadMoreModule.isEnableLoadMore = true
@@ -304,7 +304,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
             viewModel?.getFilesNew()
         }
         adapter!!.setOnItemClickListener { adapter, _, position ->
-            val file = adapter.data[position] as LocalMedia?
+            val file = adapter.data[position] as AlbumFile?
             file?.let {
                 when (it.itemType) {
                     AlbumFileType.SYSTEM_CAMERA.ordinal -> {
@@ -357,7 +357,7 @@ class AlbumActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun clickItemNew(file: LocalMedia?, position: Int) {
+    private fun clickItemNew(file: AlbumFile?, position: Int) {
         file?.let {
             if (selectedCount >= maxSelectedCount && !it.isSelected) {
                 AlbumToastUtil.shortCenter(getString(R.string.max_selected_count, maxSelectedCount))

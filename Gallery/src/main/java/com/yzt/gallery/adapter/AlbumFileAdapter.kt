@@ -19,7 +19,8 @@ import com.yzt.gallery.key.AlbumFileType
  *
  * @author yzt 2020/4/22
  */
-class AlbumFileAdapter(data: MutableList<AlbumFile>?, activity: Activity?) : BaseQuickAdapter<AlbumFile, BaseViewHolder>(R.layout.item_album_file, data), LoadMoreModule {
+class AlbumFileAdapter(data: MutableList<AlbumFile>?, activity: Activity?) :
+    BaseQuickAdapter<AlbumFile, BaseViewHolder>(R.layout.item_album_file, data), LoadMoreModule {
 
     private var activity: Activity? = null
 
@@ -28,8 +29,6 @@ class AlbumFileAdapter(data: MutableList<AlbumFile>?, activity: Activity?) : Bas
     }
 
     override fun convert(holder: BaseViewHolder, item: AlbumFile) {
-        val itemView = holder.itemView
-        val position = holder.layoutPosition
         val iv = holder.getView<AppCompatImageView>(R.id.iv)
         val ivSelected = holder.getView<AppCompatImageView>(R.id.iv_selected)
         val tvSelected = holder.getView<AppCompatTextView>(R.id.tv_selected)
@@ -59,7 +58,8 @@ class AlbumFileAdapter(data: MutableList<AlbumFile>?, activity: Activity?) : Bas
             AlbumFileType.FILE.ordinal -> {
                 ivSelected.visibility = View.VISIBLE
                 ivSelected.isSelected = item.isSelected
-                tvSelected.visibility = if (item.isSelected && item.selectedNo > 0) View.VISIBLE else View.GONE
+                tvSelected.visibility =
+                    if (item.isSelected && item.selectedNo > 0) View.VISIBLE else View.GONE
                 tvSelected.text = item.selectedNo.toString()
                 ivS.visibility = View.GONE
                 tvS.visibility = View.GONE
@@ -67,10 +67,10 @@ class AlbumFileAdapter(data: MutableList<AlbumFile>?, activity: Activity?) : Bas
                     activity?.let { activity ->
                         if (!activity.isFinishing) {
                             Glide
-                                    .with(context)
-                                    .load(it)
-                                    .transition(DrawableTransitionOptions.withCrossFade())
-                                    .into(iv)
+                                .with(context)
+                                .load(it)
+                                .transition(DrawableTransitionOptions.withCrossFade())
+                                .into(iv)
                         }
                     }
                 }
