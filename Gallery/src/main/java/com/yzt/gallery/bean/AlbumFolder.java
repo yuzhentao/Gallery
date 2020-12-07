@@ -14,7 +14,6 @@ public class AlbumFolder implements Parcelable {
     private int imageNum;
     private int checkedNum;
     private boolean isSelected;
-    private int ofAllType = -1;
     private boolean isCameraFolder;
     private List<AlbumFile> data = new ArrayList<>();
     private int currentDataPage;
@@ -68,14 +67,6 @@ public class AlbumFolder implements Parcelable {
         isSelected = selected;
     }
 
-    public int getOfAllType() {
-        return ofAllType;
-    }
-
-    public void setOfAllType(int ofAllType) {
-        this.ofAllType = ofAllType;
-    }
-
     public boolean isCameraFolder() {
         return isCameraFolder;
     }
@@ -119,7 +110,6 @@ public class AlbumFolder implements Parcelable {
         imageNum = in.readInt();
         checkedNum = in.readInt();
         isSelected = in.readByte() != 0;
-        ofAllType = in.readInt();
         isCameraFolder = in.readByte() != 0;
         data = in.createTypedArrayList(AlbumFile.CREATOR);
         currentDataPage = in.readInt();
@@ -134,7 +124,6 @@ public class AlbumFolder implements Parcelable {
         dest.writeInt(imageNum);
         dest.writeInt(checkedNum);
         dest.writeByte((byte) (isSelected ? 1 : 0));
-        dest.writeInt(ofAllType);
         dest.writeByte((byte) (isCameraFolder ? 1 : 0));
         dest.writeTypedList(data);
         dest.writeInt(currentDataPage);

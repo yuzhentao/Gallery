@@ -19,7 +19,6 @@ public class AlbumFile implements Parcelable {
     private long duration;//视频时长
     public int position;
     private String mimeType;//媒体资源类型
-    private int chooseModel;//相册选择模式
     private int width;
     private int height;
     private long size;
@@ -124,14 +123,6 @@ public class AlbumFile implements Parcelable {
         this.mimeType = mimeType;
     }
 
-    public int getChooseModel() {
-        return chooseModel;
-    }
-
-    public void setChooseModel(int chooseModel) {
-        this.chooseModel = chooseModel;
-    }
-
     public int getWidth() {
         return width;
     }
@@ -192,15 +183,13 @@ public class AlbumFile implements Parcelable {
 
     }
 
-    public AlbumFile(long id, String path, String absolutePath, String fileName, String parentFolderName, long duration, int chooseModel,
-                     String mimeType, int width, int height, long size, long bucketId) {
+    public AlbumFile(long id, String path, String absolutePath, String fileName, String parentFolderName, long duration, String mimeType, int width, int height, long size, long bucketId) {
         this.id = id;
         this.path = path;
         this.realPath = absolutePath;
         this.fileName = fileName;
         this.parentFolderName = parentFolderName;
         this.duration = duration;
-        this.chooseModel = chooseModel;
         this.mimeType = mimeType;
         this.width = width;
         this.height = height;
@@ -221,7 +210,6 @@ public class AlbumFile implements Parcelable {
         duration = in.readLong();
         position = in.readInt();
         mimeType = in.readString();
-        chooseModel = in.readInt();
         width = in.readInt();
         height = in.readInt();
         size = in.readLong();
@@ -245,7 +233,6 @@ public class AlbumFile implements Parcelable {
         dest.writeLong(duration);
         dest.writeInt(position);
         dest.writeString(mimeType);
-        dest.writeInt(chooseModel);
         dest.writeInt(width);
         dest.writeInt(height);
         dest.writeLong(size);

@@ -1,6 +1,6 @@
 package com.yzt.gallery.util;
 
-public class ValueOf {
+public class AlbumToUtil {
 
     public static String toString(Object o) {
         String value = "";

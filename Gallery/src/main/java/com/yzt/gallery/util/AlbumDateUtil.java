@@ -11,7 +11,7 @@ public class AlbumDateUtil {
      */
     public static int dateDiffer(long d) {
         try {
-            long l1 = ValueOf.toLong(String.valueOf(System.currentTimeMillis()).substring(0, 10));
+            long l1 = AlbumToUtil.toLong(String.valueOf(System.currentTimeMillis()).substring(0, 10));
             long interval = l1 - d;
             return (int) Math.abs(interval);
         } catch (Exception e) {

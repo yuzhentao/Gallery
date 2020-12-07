@@ -134,7 +134,7 @@ class AlbumRepository {
                                             id
                                         )
                                     folder.name = bucketDisplayName
-                                    folder.imageNum = ValueOf.toInt(size)
+                                    folder.imageNum = AlbumToUtil.toInt(size)
                                     folders.add(folder)
                                     set.add(bucketId)
                                     totalCount += size.toInt()
@@ -178,7 +178,6 @@ class AlbumRepository {
                         }
                         allFolder.name = bucketDisplayName
                         allFolder.imageNum = totalCount
-                        allFolder.ofAllType = PictureMimeType.ofImage()
                         allFolder.isSelected = true
                         allFolder.isCameraFolder = true
                         folders.add(0, allFolder)
@@ -280,14 +279,14 @@ class AlbumRepository {
 
                             var mimeType = cursor.getString(mimeTypeColumn)
                             mimeType =
-                                if (TextUtils.isEmpty(mimeType)) PictureMimeType.ofJPEG() else mimeType
+                                if (TextUtils.isEmpty(mimeType)) AlbumImageTypeUtil.ofJPEG() else mimeType
                             if (mimeType.endsWith("image/*")) {
-                                mimeType = if (PictureMimeType.isContent(url)) {
-                                    PictureMimeType.getImageMimeType(absolutePath)
+                                mimeType = if (AlbumImageTypeUtil.isContent(url)) {
+                                    AlbumImageTypeUtil.getImageMimeType(absolutePath)
                                 } else {
-                                    PictureMimeType.getImageMimeType(url)
+                                    AlbumImageTypeUtil.getImageMimeType(url)
                                 }
-                                if (PictureMimeType.isGif(mimeType)) {//过滤GIF
+                                if (AlbumImageTypeUtil.isGif(mimeType)) {//过滤GIF
                                     continue
                                 }
                             }
@@ -311,7 +310,6 @@ class AlbumRepository {
                                 fileName,
                                 folderName,
                                 duration,
-                                PictureMimeType.ofImage(),
                                 mimeType,
                                 width,
                                 height,
@@ -428,12 +426,12 @@ class AlbumRepository {
     ): Array<String> {
         return if (bucketId == -1L) arrayOf(mediaType.toString()) else arrayOf(
             mediaType.toString(),
-            ValueOf.toString(bucketId)
+            AlbumToUtil.toString(bucketId)
         )
     }
 
     private fun getRealPathAndroidQ(id: Long): String {
-        return uri.buildUpon().appendPath(ValueOf.toString(id)).build().toString()
+        return uri.buildUpon().appendPath(AlbumToUtil.toString(id)).build().toString()
     }
 
     private fun getFirstUrl(cursor: Cursor): String {
